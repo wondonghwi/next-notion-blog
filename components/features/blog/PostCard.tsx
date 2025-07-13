@@ -1,15 +1,14 @@
 'use client';
-
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Calendar, User } from 'lucide-react';
 import Image from 'next/image';
-import { NotionPost } from '@/types/notion';
+import { Post } from '@/types/blog';
 
 interface PostCardProps {
-  post: NotionPost;
+  post: Post;
 }
 
 export function PostCard({ post }: PostCardProps) {

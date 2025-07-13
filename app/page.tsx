@@ -10,40 +10,25 @@ import { TagSection } from '@/app/_components/TagSection';
 import { ProfileSection } from '@/app/_components/ProfileSection';
 import { ContactSection } from '@/app/_components/ContactSection';
 import Link from 'next/link';
+import { getPublishedPosts } from '@/lib/notion';
 
-const mockPosts = [
-  {
-    id: '1',
-    title: 'Next.js 13으로 블로그 만들기',
-    description: 'Next.js 13과 Notion API를 활용하여 개인 블로그를 만드는 방법을 알아봅니다.',
-    coverImage: 'https://picsum.photos/800/400',
-    tags: [
-      { id: '1', name: 'Next.js' },
-      { id: '2', name: 'React' },
-    ],
-    authors: '짐코딩',
-    date: '2024-02-01',
-  },
-  {
-    id: '2',
-    title: 'TypeScript 기초 다지기',
-    description: 'TypeScript의 기본 문법과 실전에서 자주 사용되는 패턴들을 살펴봅니다.',
-    coverImage: 'https://picsum.photos/800/401',
-    tags: [
-      { id: '3', name: 'TypeScript' },
-      { id: '4', name: 'JavaScript' },
-    ],
-    authors: '짐코딩',
-    date: '2024-01-15',
-  },
+const mockTags = [
+  { id: '1', name: '전체', count: 20 },
+  { id: '2', name: 'HTML', count: 10 },
+  { id: '3', name: 'CSS', count: 5 },
+  { id: '4', name: 'JavaScript', count: 3 },
+  { id: '5', name: 'React', count: 3 },
+  { id: '6', name: 'Next.js', count: 3 },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const posts = await getPublishedPosts();
+
   return (
     <div className="container py-8">
       <div className="grid grid-cols-[200px_1fr_220px] gap-6">
         <aside>
-          <TagSection />
+          <TagSection tags={mockTags} />
         </aside>
 
         <div className="space-y-8">
@@ -60,7 +45,7 @@ export default function Home() {
             </Select>
           </div>
           <div className="grid gap-4">
-            {mockPosts.map((post) => (
+            {posts.map((post) => (
               <Link href={`/blog/${post.id}`} key={post.id}>
                 <PostCard post={post} />
               </Link>
