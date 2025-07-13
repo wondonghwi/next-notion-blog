@@ -41,6 +41,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --height-header: 3.5rem;
+  --sticky-offset: 1.5rem;
+  --sticky-top: calc(var(--height-header) + var(--sticky-offset));
 }
 
 :root {
