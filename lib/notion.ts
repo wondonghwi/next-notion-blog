@@ -6,14 +6,58 @@ export const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
 
-export const getPublishedPosts = async (): Promise<Post[]> => {
+export const getTags = async (): Promise<TagFilterItem[]> => {
+  const posts = await getPublishedPosts();
+
+  const tagCount = posts.reduce(
+    (acc, post) => {
+      post.tags?.forEach((tag) => {
+        acc[tag.name] = (acc[tag.name] || 0) + 1;
+      });
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  const tags: TagFilterItem[] = Object.entries(tagCount).map(([name, count]) => ({
+    id: name,
+    name,
+    count,
+  }));
+
+  tags.unshift({
+    id: 'all',
+    name: '전체',
+    count: posts.length,
+  });
+
+  const [allTag, ...restTags] = tags;
+  const sortedTags = restTags.sort((a, b) => a.name.localeCompare(b.name));
+
+  return [allTag, ...sortedTags];
+};
+export const getPublishedPosts = async (tag?: string): Promise<Post[]> => {
   const response = await notion.databases.query({
     database_id: process.env.NOTION_DATABASE_ID!,
     filter: {
-      property: 'Status',
-      select: {
-        equals: 'Published',
-      },
+      and: [
+        {
+          property: 'Status',
+          select: {
+            equals: 'Published',
+          },
+        },
+        ...(tag && tag !== '전체'
+          ? [
+              {
+                property: 'Tags',
+                multi_select: {
+                  contains: tag,
+                },
+              },
+            ]
+          : []),
+      ],
     },
     sorts: [
       {
