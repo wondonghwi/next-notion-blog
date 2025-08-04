@@ -8,6 +8,7 @@ import { getPostBySlug } from '@/lib/notion';
 import { formatDateToKorean } from '@/lib/date';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
 
 interface TableOfContentsItem {
   id: string;
@@ -153,11 +154,14 @@ export default async function BlogPost({ params }: BlogPostProps) {
           <Separator className="my-8" />
 
           {/* 블로그 본문 */}
-          <div className="prose prose-slate dark:prose-invert max-w-none">
+          <div className="prose prose-slate dark:prose-invert prose-headings:scroll-mt-[var(--header-height)] max-w-none">
             <MDXRemote
               source={markdown}
               options={{
-                mdxOptions: { remarkPlugins: [remarkGfm] },
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm],
+                  rehypePlugins: [rehypeSanitize],
+                },
               }}
             />
           </div>
