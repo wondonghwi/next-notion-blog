@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { getPostBySlug } from '@/lib/notion';
 import { formatDateToKorean } from '@/lib/date';
+import { MDXRemote } from 'next-mdx-remote-client/rsc';
 
 interface TableOfContentsItem {
   id: string;
@@ -116,7 +117,7 @@ interface BlogPostProps {
 
 export default async function BlogPost({ params }: BlogPostProps) {
   const { slug } = await params;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const { markdown, post } = await getPostBySlug(slug);
 
   return (
@@ -152,10 +153,7 @@ export default async function BlogPost({ params }: BlogPostProps) {
 
           {/* 블로그 본문 */}
           <div className="prose prose-slate dark:prose-invert max-w-none">
-            <p className="lead">
-              Next.js와 Shadcn UI를 사용하여 모던하고 아름다운 블로그를 만드는 방법을
-              알아보겠습니다. 이 튜토리얼에서는 기본적인 설정부터 배포까지 전 과정을 다룹니다.
-            </p>
+            <MDXRemote source={markdown} />
           </div>
 
           <Separator className="my-16" />

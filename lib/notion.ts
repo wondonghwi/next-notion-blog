@@ -1,9 +1,14 @@
 import { Client } from '@notionhq/client';
 import type { Post, TagFilterItem } from '@/types/blog';
 import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { NotionToMarkdown } from 'notion-to-md';
 
 export const notion = new Client({
   auth: process.env.NOTION_TOKEN,
+});
+
+const n2m = new NotionToMarkdown({
+  notionClient: notion,
 });
 
 const getPostMetaData = (page: PageObjectResponse): Post => {
@@ -79,8 +84,11 @@ export const getPostBySlug = async (slug: string) => {
     },
   });
 
+  const mdBlocks = await n2m.pageToMarkdown(response.results[0].id);
+  const { parent } = n2m.toMarkdownString(mdBlocks);
+
   return {
-    markdown: '',
+    markdown: parent,
     post: getPostMetaData(response.results[0] as PageObjectResponse),
   };
 };

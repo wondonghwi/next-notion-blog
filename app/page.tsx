@@ -44,7 +44,7 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
           <div className="grid gap-4">
             {posts.map((post) => (
-              <Link href={`/blog/${post.id}`} key={post.id}>
+              <Link href={`/blog/${post.slug}`} key={post.id}>
                 <PostCard post={post} />
               </Link>
             ))}
