@@ -6,36 +6,85 @@ export const notion = new Client({
   auth: process.env.NOTION_TOKEN,
 });
 
-export const getTags = async (): Promise<TagFilterItem[]> => {
-  const posts = await getPublishedPosts();
+const getPostMetaData = (page: PageObjectResponse): Post => {
+  const { properties } = page;
 
-  const tagCount = posts.reduce(
-    (acc, post) => {
-      post.tags?.forEach((tag) => {
-        acc[tag.name] = (acc[tag.name] || 0) + 1;
-      });
-      return acc;
+  const getCoverImage = (cover: PageObjectResponse['cover']) => {
+    if (!cover) return '';
+
+    switch (cover.type) {
+      case 'external':
+        return cover.external.url;
+      case 'file':
+        return cover.file.url;
+      default:
+        return '';
+    }
+  };
+
+  const tags: TagFilterItem[] =
+    properties.Tags.type === 'multi_select'
+      ? properties.Tags.multi_select.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+          count: 1,
+        }))
+      : [];
+
+  let author = '';
+  if (properties.Author.type === 'people' && properties.Author.people.length > 0) {
+    const person = properties.Author.people[0];
+    if ('name' in person && typeof person.name === 'string') {
+      author = person.name;
+    }
+  }
+
+  return {
+    id: page.id,
+    title: properties.Title.type === 'title' ? (properties.Title.title[0]?.plain_text ?? '') : '',
+    description:
+      properties.Description.type === 'rich_text'
+        ? (properties.Description.rich_text[0]?.plain_text ?? '')
+        : '',
+    coverImage: getCoverImage(page.cover),
+    tags,
+    author,
+    date: properties.Date.type === 'date' ? (properties.Date.date?.start ?? '') : '',
+    modifiedDate: page.last_edited_time,
+    slug:
+      properties.Slug.type === 'rich_text'
+        ? (properties.Slug.rich_text[0]?.plain_text ?? page.id)
+        : page.id,
+  };
+};
+
+export const getPostBySlug = async (slug: string) => {
+  const response = await notion.databases.query({
+    database_id: process.env.NOTION_DATABASE_ID!,
+    filter: {
+      and: [
+        {
+          property: 'Slug',
+          rich_text: {
+            equals: slug,
+          },
+        },
+        {
+          property: 'Status',
+          select: {
+            equals: 'Published',
+          },
+        },
+      ],
     },
-    {} as Record<string, number>
-  );
-
-  const tags: TagFilterItem[] = Object.entries(tagCount).map(([name, count]) => ({
-    id: name,
-    name,
-    count,
-  }));
-
-  tags.unshift({
-    id: 'all',
-    name: '전체',
-    count: posts.length,
   });
 
-  const [allTag, ...restTags] = tags;
-  const sortedTags = restTags.sort((a, b) => a.name.localeCompare(b.name));
-
-  return [allTag, ...sortedTags];
+  return {
+    markdown: '',
+    post: getPostMetaData(response.results[0] as PageObjectResponse),
+  };
 };
+
 export const getPublishedPosts = async (tag?: string): Promise<Post[]> => {
   const response = await notion.databases.query({
     database_id: process.env.NOTION_DATABASE_ID!,
@@ -69,56 +118,36 @@ export const getPublishedPosts = async (tag?: string): Promise<Post[]> => {
 
   return response.results
     .filter((page): page is PageObjectResponse => 'properties' in page)
-    .map((page) => {
-      const { properties } = page;
+    .map(getPostMetaData);
+};
 
-      const getCoverImage = (cover: PageObjectResponse['cover']) => {
-        if (!cover) return '';
+export const getTags = async (): Promise<TagFilterItem[]> => {
+  const posts = await getPublishedPosts();
 
-        switch (cover.type) {
-          case 'external':
-            return cover.external.url;
-          case 'file':
-            return cover.file.url;
-          default:
-            return '';
-        }
-      };
+  const tagCount = posts.reduce(
+    (acc, post) => {
+      post.tags?.forEach((tag) => {
+        acc[tag.name] = (acc[tag.name] || 0) + 1;
+      });
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-      const tags: TagFilterItem[] =
-        properties.Tags.type === 'multi_select'
-          ? properties.Tags.multi_select.map((tag) => ({
-              id: tag.id,
-              name: tag.name,
-              count: 1,
-            }))
-          : [];
+  const tags: TagFilterItem[] = Object.entries(tagCount).map(([name, count]) => ({
+    id: name,
+    name,
+    count,
+  }));
 
-      let author = '';
-      if (properties.Author.type === 'people' && properties.Author.people.length > 0) {
-        const person = properties.Author.people[0];
-        if ('name' in person && typeof person.name === 'string') {
-          author = person.name;
-        }
-      }
+  tags.unshift({
+    id: 'all',
+    name: '전체',
+    count: posts.length,
+  });
 
-      return {
-        id: page.id,
-        title:
-          properties.Title.type === 'title' ? (properties.Title.title[0]?.plain_text ?? '') : '',
-        description:
-          properties.Description.type === 'rich_text'
-            ? (properties.Description.rich_text[0]?.plain_text ?? '')
-            : '',
-        coverImage: getCoverImage(page.cover),
-        tags,
-        author,
-        date: properties.Date.type === 'date' ? (properties.Date.date?.start ?? '') : '',
-        modifiedDate: page.last_edited_time,
-        slug:
-          properties.Slug.type === 'rich_text'
-            ? (properties.Slug.rich_text[0]?.plain_text ?? page.id)
-            : page.id,
-      };
-    });
+  const [allTag, ...restTags] = tags;
+  const sortedTags = restTags.sort((a, b) => a.name.localeCompare(b.name));
+
+  return [allTag, ...sortedTags];
 };
