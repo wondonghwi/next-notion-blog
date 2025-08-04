@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withMDX = createMDX({});
+const withMDX = createMDX({
+  options: {
+    // @ts-expect-error - remark-gfm 타입 충돌 문제해결
+    remarkPlugins: [['remark-gfm']],
+  },
+});
 
 export default withMDX(nextConfig);
