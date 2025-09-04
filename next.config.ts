@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import createMDX from '@next/mdx';
+import remarkGfm from 'remark-gfm';
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
@@ -20,8 +21,7 @@ const nextConfig: NextConfig = {
 
 const withMDX = createMDX({
   options: {
-    // @ts-expect-error - remark-gfm 타입 충돌 문제해결
-    remarkPlugins: [['remark-gfm']],
+    remarkPlugins: [remarkGfm],
   },
 });
 

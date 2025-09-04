@@ -45,6 +45,13 @@ notion-blog-nextjs/
 
 ## 개발 환경 설정
 
+### 요구사항
+
+- Node.js >= 22.17.1
+- pnpm >= 10.14.0
+
+### 설치 방법
+
 1. 저장소 클론:
 
    ```bash
@@ -52,13 +59,25 @@ notion-blog-nextjs/
    cd notion-blog-nextjs
    ```
 
-2. 의존성 설치:
+2. Node.js 버전 확인 및 전환 (nvm 사용 시):
+
+   ```bash
+   nvm use  # .nvmrc 파일의 버전으로 자동 전환
+   ```
+
+3. pnpm 설치 (필요한 경우):
+
+   ```bash
+   npm install -g pnpm@10.14.0
+   ```
+
+4. 의존성 설치:
 
    ```bash
    pnpm install
    ```
 
-3. 환경 변수 설정:
+5. 환경 변수 설정:
    `.env.local` 파일을 생성하고 다음 변수를 설정합니다:
 
    ```
@@ -66,10 +85,8 @@ notion-blog-nextjs/
    NOTION_DATABASE_ID=your_notion_database_id
    ```
 
-4. 개발 서버 실행:
+6. 개발 서버 실행:
 
    ```bash
    pnpm dev
    ```
-
-이 프로젝트는 인간 개발자와 AI의 협업이 어떻게 효율적이고 창의적인 개발을 이끌어낼 수 있는지 보여주는 좋은 예시입니다.
