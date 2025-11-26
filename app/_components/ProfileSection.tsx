@@ -29,7 +29,7 @@ export function ProfileSection() {
                   alt="profile"
                   width={144}
                   height={144}
-                  className="object-cover"
+                  className="h-full w-full object-cover"
                 />
               </div>
             </div>
