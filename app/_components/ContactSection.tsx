@@ -1,38 +1,27 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Megaphone, BookOpen, HandshakeIcon } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 const contactItems = [
   {
     id: '1',
-    icon: Megaphone,
-    title: '광고 및 제휴',
-    description: '브랜드 홍보, 컨텐츠 제작, 협업 제안',
+    icon: Mail,
+    title: '개인 이메일',
+    description: '개인적인 문의와 협업 제안',
     mailto: {
-      email: 'bruce.lean17@gmail.com',
-      subject: '[광고/제휴] 제안',
-      body: '브랜드/제품명:\n제안 내용:\n기간:\n예산:',
+      email: 'donghwi1289@gmail.com',
+      subject: '문의',
+      body: '안녕하세요,\n\n문의 내용:',
     },
   },
   {
     id: '2',
-    icon: BookOpen,
-    title: '강의 문의',
-    description: '기술 강의, 워크샵, 세미나 진행',
+    icon: Mail,
+    title: '회사 이메일',
+    description: '업무 관련 문의와 협업',
     mailto: {
-      email: 'bruce.lean17@gmail.com',
-      subject: '[강의] 문의',
-      body: '강의 주제:\n예상 인원:\n희망 일정:\n문의 내용:',
-    },
-  },
-  {
-    id: '3',
-    icon: HandshakeIcon,
-    title: '기타 문의',
-    description: '채용, 인터뷰, 기타 협업 제안',
-    mailto: {
-      email: 'bruce.lean17@gmail.com',
-      subject: '[기타] 문의',
-      body: '문의 종류:\n문의 내용:',
+      email: 'dh.won@sk.com',
+      subject: '[회사] 문의',
+      body: '안녕하세요,\n\n문의 내용:',
     },
   },
 ];
@@ -43,6 +32,7 @@ export function ContactSection() {
       <CardHeader>
         <CardTitle>문의하기</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="space-y-3">
           {contactItems.map((item) => (

@@ -1,28 +1,18 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Youtube, Github, BookOpen, Instagram } from 'lucide-react';
+import { Github, Linkedin } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
 const socialLinks = [
   {
     id: 1,
-    icon: Youtube,
-    href: 'https://www.youtube.com/gymcoding',
+    icon: Github,
+    href: 'https://github.com/wondonghwi',
   },
   {
     id: 2,
-    icon: Github,
-    href: 'https://github.com/gymcoding',
-  },
-  {
-    id: 3,
-    icon: BookOpen,
-    href: 'https://www.inflearn.com/users/432199/@gymcoding',
-  },
-  {
-    id: 4,
-    icon: Instagram,
-    href: 'https://www.instagram.com/gymcoding',
+    icon: Linkedin,
+    href: 'https://www.linkedin.com/in/%EB%8F%99%ED%9C%98-%EC%9B%90-0652911a2/',
   },
 ];
 

@@ -9,7 +9,7 @@ interface AboutLayoutProps {
 const menuItems = [
   { icon: User, label: '프로필', href: '/about' },
   { icon: Code2, label: '기술 스택', href: '/about/skills' },
-  { icon: Coffee, label: '컨택', href: 'donghwi1289@gmail.com' },
+  { icon: Coffee, label: '컨택', href: 'mailto:donghwi1289@gmail.com', external: true },
   { icon: ExternalLink, label: 'Github', href: 'https://github.com/wondonghwi', external: true },
 ];
 

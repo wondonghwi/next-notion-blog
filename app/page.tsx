@@ -15,6 +15,7 @@ import { getPublishedPosts, getTags } from '@/lib/notion';
 interface HomeProps {
   searchParams: Promise<{ tag?: string }>;
 }
+
 export default async function Home({ searchParams }: HomeProps) {
   const { tag } = await searchParams;
   const selectedTag = tag || '전체';
@@ -32,6 +33,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <h2 className="text-3xl font-bold tracking-tight">
               {selectedTag === '전체' ? '블로그 목록' : `${selectedTag} 관련 글`}
             </h2>
+
             <Select defaultValue="latest">
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 방식 선택" />
@@ -42,6 +44,7 @@ export default async function Home({ searchParams }: HomeProps) {
               </SelectContent>
             </Select>
           </div>
+
           <div className="grid gap-4">
             {posts.map((post) => (
               <Link href={`/blog/${post.slug}`} key={post.id}>

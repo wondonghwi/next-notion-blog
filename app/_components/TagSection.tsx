@@ -14,6 +14,7 @@ export function TagSection({ tags, selectedTag }: TagSectionProps) {
       <CardHeader>
         <CardTitle>태그 목록</CardTitle>
       </CardHeader>
+
       <CardContent>
         <div className="flex flex-col gap-3">
           {tags.map((tag) => (
