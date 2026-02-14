@@ -1,8 +1,7 @@
-import { PostCard } from '@/components/features/blog/PostCard';
+import { PostList } from '@/components/features/blog/PostList';
 import { TagSection } from '@/app/_components/TagSection';
 import { ProfileSection } from '@/app/_components/ProfileSection';
 import { ContactSection } from '@/app/_components/ContactSection';
-import Link from 'next/link';
 import { getPublishedPosts, getTagsFromPosts } from '@/lib/notion';
 import SortSelect from './_components/SortSelect';
 import type { Post, PostSort } from '@/types/blog';
@@ -48,19 +47,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <SortSelect />
           </div>
 
-          {posts.length > 0 ? (
-            <div className="grid gap-4">
-              {posts.map((post, index) => (
-                <Link href={`/blog/${post.slug}`} key={post.id}>
-                  <PostCard post={post} isFirst={index === 0} />
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-xl border border-dashed p-10 text-center">
-              <p className="text-muted-foreground text-sm">조건에 맞는 게시글이 없습니다.</p>
-            </div>
-          )}
+          <PostList posts={posts} />
         </div>
 
         <aside className="order-3 flex flex-col gap-6">
