@@ -8,15 +8,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useRouter, useSearchParams } from 'next/navigation';
+import type { PostSort } from '@/types/blog';
 
 export default function SortSelect() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedSort = searchParams.get('sort') || 'latest';
+  const selectedSort: PostSort = searchParams.get('sort') === 'oldest' ? 'oldest' : 'latest';
 
   const handleValueChange = (value: string) => {
+    const normalizedSort: PostSort = value === 'oldest' ? 'oldest' : 'latest';
     const params = new URLSearchParams(searchParams.toString());
-    params.set('sort', value);
+    params.set('sort', normalizedSort);
     router.push(`?${params.toString()}`);
   };
 
