@@ -49,13 +49,13 @@ const renderHome = async (params: { tag?: string; sort?: string } = {}) => {
   return render(view);
 };
 
-describe('home page integration', () => {
+describe('홈 페이지 통합', () => {
   beforeEach(() => {
     mockedGetPublishedPosts.mockResolvedValue(allPosts);
     mockedGetTagsFromPosts.mockReturnValue(tags);
   });
 
-  it('renders blog list and links with default query params', async () => {
+  it('기본 쿼리에서 블로그 목록과 링크를 렌더링한다', async () => {
     await renderHome();
 
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith(undefined, 'latest');
@@ -65,7 +65,7 @@ describe('home page integration', () => {
     expect(document.querySelector('a[href="/blog/second-post"]')).toBeInTheDocument();
   });
 
-  it('filters posts by selected tag and keeps selected heading', async () => {
+  it('선택한 태그로 게시글을 필터링하고 헤더를 유지한다', async () => {
     await renderHome({ tag: 'React', sort: 'oldest' });
 
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith(undefined, 'oldest');
@@ -74,7 +74,7 @@ describe('home page integration', () => {
     expect(document.querySelector('a[href="/blog/second-post"]')).not.toBeInTheDocument();
   });
 
-  it('renders empty state when no posts match selected tag', async () => {
+  it('선택 태그에 맞는 게시글이 없으면 빈 상태를 렌더링한다', async () => {
     await renderHome({ tag: 'TypeScript', sort: 'latest' });
 
     expect(screen.getByText('조건에 맞는 게시글이 없습니다.')).toBeInTheDocument();

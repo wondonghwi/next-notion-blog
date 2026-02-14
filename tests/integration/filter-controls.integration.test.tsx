@@ -51,13 +51,13 @@ vi.mock('@/components/ui/select', async () => {
   };
 });
 
-describe('filter controls integration', () => {
+describe('필터 컨트롤 통합', () => {
   beforeEach(() => {
     navigationMocks.push.mockReset();
     navigationMocks.useSearchParams.mockReturnValue(new URLSearchParams('tag=React&sort=latest'));
   });
 
-  it('keeps current tag when changing sort', async () => {
+  it('정렬을 변경해도 현재 태그를 유지한다', async () => {
     const user = userEvent.setup();
 
     render(<SortSelect />);
@@ -67,7 +67,7 @@ describe('filter controls integration', () => {
     expect(navigationMocks.push).toHaveBeenCalledWith('?tag=React&sort=oldest');
   });
 
-  it('builds tag links that preserve current sort', () => {
+  it('태그 링크를 만들 때 현재 정렬 값을 보존한다', () => {
     render(
       <TagSection
         tags={[

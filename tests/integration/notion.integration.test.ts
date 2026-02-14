@@ -61,12 +61,12 @@ const createMockPage = ({ id, title, slug, tagNames = ['React'] }: MockPageOptio
   };
 };
 
-describe('notion data integration', () => {
+describe('Notion 데이터 통합', () => {
   beforeEach(() => {
     vi.resetModules();
   });
 
-  it('requests latest sort and maps post metadata', async () => {
+  it('최신순 요청 시 정렬 방향과 게시글 메타데이터를 매핑한다', async () => {
     let sortDirection = '';
 
     server.use(
@@ -101,7 +101,7 @@ describe('notion data integration', () => {
     });
   });
 
-  it('requests oldest sort as ascending', async () => {
+  it('오래된순 요청 시 오름차순 정렬을 요청한다', async () => {
     let sortDirection = '';
 
     server.use(
@@ -129,7 +129,7 @@ describe('notion data integration', () => {
     expect(sortDirection).toBe('ascending');
   });
 
-  it('builds tag list from posts with total count and sorted tags', async () => {
+  it('게시글 목록으로 전체 카운트와 정렬된 태그 목록을 만든다', async () => {
     const posts: Post[] = [
       {
         id: '1',
@@ -158,7 +158,7 @@ describe('notion data integration', () => {
     ]);
   });
 
-  it('returns null when post slug does not exist', async () => {
+  it('슬러그에 해당하는 게시글이 없으면 null을 반환한다', async () => {
     let requestedSlug = '';
 
     server.use(

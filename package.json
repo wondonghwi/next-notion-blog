@@ -14,7 +14,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "test": "vitest",
-    "test:watch": "vitest --watch --verbose",
+    "test:watch": "vitest --watch --reporter=verbose",
     "format": "prettier --write .",
     "prepare": "husky"
   },

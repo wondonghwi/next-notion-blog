@@ -24,13 +24,13 @@ vi.mock('next-mdx-remote-client/rsc', () => ({
 
 import BlogPost from '@/app/blog/[slug]/page';
 
-describe('blog post page integration', () => {
+describe('블로그 상세 페이지 통합', () => {
   beforeEach(() => {
     mocks.getPostBySlug.mockReset();
     mocks.notFound.mockClear();
   });
 
-  it('calls notFound when post does not exist', async () => {
+  it('게시글이 없으면 notFound를 호출한다', async () => {
     mocks.getPostBySlug.mockResolvedValue(null);
 
     await expect(BlogPost({ params: Promise.resolve({ slug: 'missing-post' }) })).rejects.toThrow(
@@ -39,7 +39,7 @@ describe('blog post page integration', () => {
     expect(mocks.notFound).toHaveBeenCalledTimes(1);
   });
 
-  it('renders post details and markdown content', async () => {
+  it('게시글 상세와 마크다운 본문을 렌더링한다', async () => {
     mocks.getPostBySlug.mockResolvedValue({
       markdown: '# 테스트 본문',
       post: {
