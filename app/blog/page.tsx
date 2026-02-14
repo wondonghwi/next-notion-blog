@@ -1,4 +1,4 @@
-export default function About() {
+export default function BlogPage() {
   return (
     <div className="container py-8">
       <div className="space-y-8">

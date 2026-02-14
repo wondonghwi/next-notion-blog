@@ -4,6 +4,8 @@ export interface TagFilterItem {
   count: number;
 }
 
+export type PostSort = 'latest' | 'oldest';
+
 export interface Post {
   id: string;
   title: string;

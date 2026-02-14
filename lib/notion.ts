@@ -1,6 +1,9 @@
 import { Client } from '@notionhq/client';
-import type { Post, TagFilterItem } from '@/types/blog';
-import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { Post, PostSort, TagFilterItem } from '@/types/blog';
+import type {
+  PageObjectResponse,
+  QueryDatabaseResponse,
+} from '@notionhq/client/build/src/api-endpoints';
 import { NotionToMarkdown } from 'notion-to-md';
 
 export const notion = new Client({
@@ -11,21 +14,41 @@ const n2m = new NotionToMarkdown({
   notionClient: notion,
 });
 
+const getDatabaseId = () => {
+  const databaseId = process.env.NOTION_DATABASE_ID;
+
+  if (!databaseId) {
+    throw new Error('NOTION_DATABASE_ID is not configured.');
+  }
+
+  return databaseId;
+};
+
+const isPageObjectResponse = (
+  page: QueryDatabaseResponse['results'][number]
+): page is PageObjectResponse => {
+  return 'properties' in page;
+};
+
+const getNormalizedSort = (sort?: string): PostSort => {
+  return sort === 'oldest' ? 'oldest' : 'latest';
+};
+
+const getCoverImage = (cover: PageObjectResponse['cover']) => {
+  if (!cover) return '';
+
+  switch (cover.type) {
+    case 'external':
+      return cover.external.url;
+    case 'file':
+      return cover.file.url;
+    default:
+      return '';
+  }
+};
+
 const getPostMetaData = (page: PageObjectResponse): Post => {
   const { properties } = page;
-
-  const getCoverImage = (cover: PageObjectResponse['cover']) => {
-    if (!cover) return '';
-
-    switch (cover.type) {
-      case 'external':
-        return cover.external.url;
-      case 'file':
-        return cover.file.url;
-      default:
-        return '';
-    }
-  };
 
   const tags: TagFilterItem[] =
     properties.Tags.type === 'multi_select'
@@ -65,7 +88,7 @@ const getPostMetaData = (page: PageObjectResponse): Post => {
 
 export const getPostBySlug = async (slug: string) => {
   const response = await notion.databases.query({
-    database_id: process.env.NOTION_DATABASE_ID!,
+    database_id: getDatabaseId(),
     filter: {
       and: [
         {
@@ -84,18 +107,25 @@ export const getPostBySlug = async (slug: string) => {
     },
   });
 
-  const mdBlocks = await n2m.pageToMarkdown(response.results[0].id);
+  const page = response.results.find(isPageObjectResponse);
+  if (!page) {
+    return null;
+  }
+
+  const mdBlocks = await n2m.pageToMarkdown(page.id);
   const { parent } = n2m.toMarkdownString(mdBlocks);
 
   return {
     markdown: parent,
-    post: getPostMetaData(response.results[0] as PageObjectResponse),
+    post: getPostMetaData(page),
   };
 };
 
 export const getPublishedPosts = async (tag?: string, sort?: string): Promise<Post[]> => {
+  const normalizedSort = getNormalizedSort(sort);
+
   const response = await notion.databases.query({
-    database_id: process.env.NOTION_DATABASE_ID!,
+    database_id: getDatabaseId(),
     filter: {
       and: [
         {
@@ -119,19 +149,15 @@ export const getPublishedPosts = async (tag?: string, sort?: string): Promise<Po
     sorts: [
       {
         property: 'Date',
-        direction: sort === 'latest' ? 'descending' : 'ascending',
+        direction: normalizedSort === 'latest' ? 'descending' : 'ascending',
       },
     ],
   });
 
-  return response.results
-    .filter((page): page is PageObjectResponse => 'properties' in page)
-    .map(getPostMetaData);
+  return response.results.filter(isPageObjectResponse).map(getPostMetaData);
 };
 
-export const getTags = async (): Promise<TagFilterItem[]> => {
-  const posts = await getPublishedPosts();
-
+export const getTagsFromPosts = (posts: Post[]): TagFilterItem[] => {
   const tagCount = posts.reduce(
     (acc, post) => {
       post.tags?.forEach((tag) => {
@@ -155,7 +181,12 @@ export const getTags = async (): Promise<TagFilterItem[]> => {
   });
 
   const [allTag, ...restTags] = tags;
-  const sortedTags = restTags.sort((a, b) => a.name.localeCompare(b.name));
+  const sortedTags = restTags.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
 
   return [allTag, ...sortedTags];
+};
+
+export const getTags = async (): Promise<TagFilterItem[]> => {
+  const posts = await getPublishedPosts();
+  return getTagsFromPosts(posts);
 };
