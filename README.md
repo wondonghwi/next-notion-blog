@@ -1,92 +1,70 @@
-# 원동휘의 개인 블로그 with Cursor AI
+# 원동휘의 개인 블로그
 
-Next.js App Router와 Cursor AI를 활용하여 개발된 개인 블로그 프로젝트입니다.
-
-## 프로젝트 소개
-
-이 프로젝트는 Cursor를 적극적으로 사용하여 개발되었습니다.
-
-## 프로젝트 구성
-
-```
-notion-blog-nextjs/
-├── app/                  # Next.js App Router 페이지
-│   ├── _components/      # 앱 전역 컴포넌트
-│   ├── about/            # 소개 페이지
-│   ├── blog/             # 블로그 페이지
-│   │   └── [slug]/       # 블로그 상세 페이지
-│   ├── docs/             # 문서 페이지
-│   └── mdx-page/         # MDX 예제 페이지
-├── components/           # 공통 컴포넌트
-│   ├── features/         # 기능별 컴포넌트
-│   │   └── blog/         # 블로그 관련 컴포넌트
-│   ├── layouts/          # 레이아웃 컴포넌트
-│   └── ui/               # UI 컴포넌트 (Shadcn)
-├── lib/                  # 유틸리티 및 API 함수
-│   ├── date.ts           # 날짜 관련 유틸리티
-│   ├── notion.ts         # Notion API 연동
-│   └── utils.ts          # 일반 유틸리티 함수
-└── types/                # 타입 정의
-```
+Next.js App Router와 Notion API를 이용해 만든 개인 블로그 프로젝트입니다.
 
 ## 기술 스택
 
-- **프레임워크**: [Next.js](https://nextjs.org) (App Router)
-- **스타일링**: [Tailwind CSS](https://tailwindcss.com) + [Shadcn UI](https://ui.shadcn.com/)
-- **콘텐츠 관리**: [Notion API](https://developers.notion.com)
-- **개발 도구**: Cursor AI
+- Next.js 15 (App Router)
+- React 19
+- Tailwind CSS v4 + shadcn/ui
+- Notion API + notion-to-md
+- Vitest + Testing Library + MSW
 
-## 주요 기능
+## 프로젝트 구조
 
-- **블로그 포스트 렌더링**: Notion API 연동 및 마크다운 변환
-- **반응형 레이아웃**: 다양한 화면 크기에 최적화된 UI 구현
-- **날짜 포맷팅**: 한국어 날짜 형식 지원 유틸리티
-- **MDX 통합**: 마크다운과 React 컴포넌트 혼합 사용
+```text
+notion-blog-nextjs/
+├── app/                  # 라우트 및 페이지
+│   ├── _components/      # 앱 전용 컴포넌트
+│   ├── about/            # 소개 페이지
+│   └── blog/[slug]/      # 블로그 상세 페이지
+├── components/           # 공통 UI/레이아웃/기능 컴포넌트
+├── lib/                  # Notion API, 유틸리티
+├── tests/                # Vitest 통합 테스트
+└── types/                # 공통 타입
+```
 
-## 개발 환경 설정
-
-### 요구사항
+## 개발 환경
 
 - Node.js >= 22.17.1
 - pnpm >= 10.14.0
 
-### 설치 방법
+## 설치 및 실행
 
-1. 저장소 클론:
+```bash
+git clone https://github.com/wondonghwi/notion-blog-nextjs.git
+cd notion-blog-nextjs
+nvm use
+pnpm install
+cp .env.example .env.local
+pnpm dev
+```
 
-   ```bash
-   git clone https://github.com/wondonghwi/notion-blog-nextjs.git
-   cd notion-blog-nextjs
-   ```
+## 환경 변수
 
-2. Node.js 버전 확인 및 전환 (nvm 사용 시):
+`.env.local` 파일에 아래 값을 설정하세요.
 
-   ```bash
-   nvm use  # .nvmrc 파일의 버전으로 자동 전환
-   ```
+```bash
+NOTION_TOKEN=your_notion_token
+NOTION_DATABASE_ID=your_notion_database_id
+```
 
-3. pnpm 설치 (필요한 경우):
+## 주요 명령어
 
-   ```bash
-   npm install -g pnpm@10.14.0
-   ```
+```bash
+pnpm dev            # 개발 서버
+pnpm build          # 프로덕션 빌드
+pnpm start          # 프로덕션 실행
+pnpm lint           # 린트
+pnpm test           # Vitest
+pnpm test --run     # 단발 실행(CI 용)
+pnpm test:watch     # watch + verbose
+```
 
-4. 의존성 설치:
+## CI
 
-   ```bash
-   pnpm install
-   ```
+GitHub Actions(`.github/workflows/ci.yml`)에서 아래를 자동 실행합니다.
 
-5. 환경 변수 설정:
-   `.env.local` 파일을 생성하고 다음 변수를 설정합니다:
-
-   ```
-   NOTION_API_KEY=your_notion_api_key
-   NOTION_DATABASE_ID=your_notion_database_id
-   ```
-
-6. 개발 서버 실행:
-
-   ```bash
-   pnpm dev
-   ```
+1. `pnpm lint`
+2. `pnpm test --run`
+3. `pnpm build`
