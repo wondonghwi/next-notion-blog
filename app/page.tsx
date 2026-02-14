@@ -1,5 +1,8 @@
+import { Suspense } from 'react';
 import { PostList } from '@/components/features/blog/PostList';
-import { TagSection } from '@/app/_components/TagSection';
+import { PostListSkeleton } from '@/components/features/blog/PostListSkeleton';
+import { TagSection } from '@/app/_components/TagSection.client';
+import { TagSectionSkeleton } from '@/app/_components/TagSectionSkeleton';
 import { ProfileSection } from '@/app/_components/ProfileSection';
 import { ContactSection } from '@/app/_components/ContactSection';
 import { getPublishedPosts, getTagsFromPosts } from '@/lib/notion';
@@ -27,15 +30,21 @@ export default async function Home({ searchParams }: HomeProps) {
   const selectedTag = tag || '전체';
   const selectedSort = normalizeSort(sort);
 
-  const allPosts = await getPublishedPosts(undefined, selectedSort);
-  const tags = getTagsFromPosts(allPosts);
-  const posts = filterPostsByTag(allPosts, selectedTag);
+  const allPostsPromise = getPublishedPosts(undefined, selectedSort);
+  const tagsPromise = allPostsPromise.then(getTagsFromPosts);
+  const postsPromise = allPostsPromise.then((posts) => filterPostsByTag(posts, selectedTag));
 
   return (
     <div className="container py-8">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[200px_minmax(0,1fr)_220px]">
         <aside className="order-2 lg:order-1">
-          <TagSection tags={tags} selectedTag={selectedTag} selectedSort={selectedSort} />
+          <Suspense fallback={<TagSectionSkeleton />}>
+            <TagSection
+              tagsPromise={tagsPromise}
+              selectedTag={selectedTag}
+              selectedSort={selectedSort}
+            />
+          </Suspense>
         </aside>
 
         <div className="order-1 space-y-8 lg:order-2">
@@ -47,7 +56,9 @@ export default async function Home({ searchParams }: HomeProps) {
             <SortSelect />
           </div>
 
-          <PostList posts={posts} />
+          <Suspense fallback={<PostListSkeleton />}>
+            <PostList postsPromise={postsPromise} />
+          </Suspense>
         </div>
 
         <aside className="order-3 flex flex-col gap-6">

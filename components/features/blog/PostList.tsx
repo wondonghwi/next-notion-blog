@@ -1,12 +1,15 @@
+import { use } from 'react';
 import Link from 'next/link';
 import type { Post } from '@/types/blog';
 import { PostCard } from './PostCard';
 
 interface PostListProps {
-  posts: Post[];
+  postsPromise: Promise<Post[]>;
 }
 
-export function PostList({ posts }: PostListProps) {
+export function PostList({ postsPromise }: PostListProps) {
+  const posts = use(postsPromise);
+
   if (posts.length === 0) {
     return (
       <div className="rounded-xl border border-dashed p-10 text-center">

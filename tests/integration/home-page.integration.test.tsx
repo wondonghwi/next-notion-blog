@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { act } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Post } from '@/types/blog';
 
@@ -46,7 +47,9 @@ const tags = [
 
 const renderHome = async (params: { tag?: string; sort?: string } = {}) => {
   const view = await Home({ searchParams: Promise.resolve(params) });
-  return render(view);
+  return await act(async () => {
+    return render(view);
+  });
 };
 
 describe('홈 페이지 통합', () => {
@@ -59,10 +62,14 @@ describe('홈 페이지 통합', () => {
     await renderHome();
 
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith(undefined, 'latest');
-    expect(mockedGetTagsFromPosts).toHaveBeenCalledWith(allPosts);
+    await waitFor(() => {
+      expect(mockedGetTagsFromPosts).toHaveBeenCalledWith(allPosts);
+    }, { timeout: 3000 });
     expect(screen.getByRole('heading', { name: '블로그 목록' })).toBeInTheDocument();
-    expect(document.querySelector('a[href="/blog/first-post"]')).toBeInTheDocument();
-    expect(document.querySelector('a[href="/blog/second-post"]')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.querySelector('a[href="/blog/first-post"]')).toBeInTheDocument();
+      expect(document.querySelector('a[href="/blog/second-post"]')).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
   it('선택한 태그로 게시글을 필터링하고 헤더를 유지한다', async () => {
@@ -70,13 +77,17 @@ describe('홈 페이지 통합', () => {
 
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith(undefined, 'oldest');
     expect(screen.getByRole('heading', { name: 'React 관련 글' })).toBeInTheDocument();
-    expect(document.querySelector('a[href="/blog/first-post"]')).toBeInTheDocument();
-    expect(document.querySelector('a[href="/blog/second-post"]')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.querySelector('a[href="/blog/first-post"]')).toBeInTheDocument();
+      expect(document.querySelector('a[href="/blog/second-post"]')).not.toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
   it('선택 태그에 맞는 게시글이 없으면 빈 상태를 렌더링한다', async () => {
     await renderHome({ tag: 'TypeScript', sort: 'latest' });
 
-    expect(screen.getByText('조건에 맞는 게시글이 없습니다.')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('조건에 맞는 게시글이 없습니다.')).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 });
