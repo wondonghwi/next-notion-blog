@@ -1,15 +1,20 @@
+'use client';
+
+import { use } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { PostSort, TagFilterItem } from '@/types/blog';
 import Link from 'next/link';
 
 interface TagSectionProps {
-  tags: TagFilterItem[];
+  tagsPromise: Promise<TagFilterItem[]>;
   selectedTag: string;
   selectedSort: PostSort;
 }
 
-export function TagSection({ tags, selectedTag, selectedSort }: TagSectionProps) {
+export function TagSection({ tagsPromise, selectedTag, selectedSort }: TagSectionProps) {
+  const tags = use(tagsPromise);
+
   return (
     <Card>
       <CardHeader>

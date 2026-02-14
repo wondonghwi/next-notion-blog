@@ -1,7 +1,8 @@
+import { act, Suspense } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { TagSection } from '@/app/_components/TagSection';
+import { TagSection } from '@/app/_components/TagSection.client';
 import SortSelect from '@/app/_components/SortSelect';
 
 const navigationMocks = vi.hoisted(() => {
@@ -67,20 +68,23 @@ describe('필터 컨트롤 통합', () => {
     expect(navigationMocks.push).toHaveBeenCalledWith('?tag=React&sort=oldest');
   });
 
-  it('태그 링크를 만들 때 현재 정렬 값을 보존한다', () => {
-    render(
-      <TagSection
-        tags={[
-          { id: 'all', name: '전체', count: 2 },
-          { id: 'react', name: 'React', count: 1 },
-        ]}
-        selectedTag="전체"
-        selectedSort="oldest"
-      />
-    );
+  it('태그 링크를 만들 때 현재 정렬 값을 보존한다', async () => {
+    await act(async () => {
+      render(
+        <Suspense fallback={<div>loading</div>}>
+          <TagSection
+            tagsPromise={Promise.resolve([
+              { id: 'all', name: '전체', count: 2 },
+              { id: 'react', name: 'React', count: 1 },
+            ])}
+            selectedTag="전체"
+            selectedSort="oldest"
+          />
+        </Suspense>
+      );
+    });
 
-    const hrefs = screen
-      .getAllByRole('link')
+    const hrefs = (await screen.findAllByRole('link', {}, { timeout: 3000 }))
       .map((link) => decodeURIComponent(link.getAttribute('href') ?? ''));
 
     expect(hrefs).toContain('?tag=전체&sort=oldest');
