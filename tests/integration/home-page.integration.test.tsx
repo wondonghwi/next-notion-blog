@@ -3,7 +3,7 @@ import { act } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Post } from '@/types/blog';
 
-vi.mock('@/app/_components/SortSelect', () => ({
+vi.mock('@/app/_components/SortSelect.client', () => ({
   default: () => <div data-testid="sort-select" />,
 }));
 

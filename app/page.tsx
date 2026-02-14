@@ -1,12 +1,12 @@
 import { Suspense } from 'react';
 import { PostList } from '@/components/features/blog/PostList';
 import { PostListSkeleton } from '@/components/features/blog/PostListSkeleton';
-import { TagSection } from '@/app/_components/TagSection.client';
+import { TagSection } from '@/app/_components/TagSection';
 import { TagSectionSkeleton } from '@/app/_components/TagSectionSkeleton';
 import { ProfileSection } from '@/app/_components/ProfileSection';
 import { ContactSection } from '@/app/_components/ContactSection';
 import { getPublishedPosts, getTagsFromPosts } from '@/lib/notion';
-import SortSelect from './_components/SortSelect';
+import SortSelect from './_components/SortSelect.client';
 import type { Post, PostSort } from '@/types/blog';
 
 interface HomeProps {
