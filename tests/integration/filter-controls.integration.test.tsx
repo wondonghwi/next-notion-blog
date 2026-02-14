@@ -2,8 +2,8 @@ import { act, Suspense } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { TagSection } from '@/app/_components/TagSection.client';
-import SortSelect from '@/app/_components/SortSelect';
+import { TagSection } from '@/app/_components/TagSection';
+import SortSelect from '@/app/_components/SortSelect.client';
 
 const navigationMocks = vi.hoisted(() => {
   return {
@@ -84,8 +84,9 @@ describe('필터 컨트롤 통합', () => {
       );
     });
 
-    const hrefs = (await screen.findAllByRole('link', {}, { timeout: 3000 }))
-      .map((link) => decodeURIComponent(link.getAttribute('href') ?? ''));
+    const hrefs = (await screen.findAllByRole('link', {}, { timeout: 3000 })).map((link) =>
+      decodeURIComponent(link.getAttribute('href') ?? '')
+    );
 
     expect(hrefs).toContain('?tag=전체&sort=oldest');
     expect(hrefs).toContain('?tag=React&sort=oldest');
