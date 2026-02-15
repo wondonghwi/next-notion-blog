@@ -30,9 +30,9 @@ export default async function Home({ searchParams }: HomeProps) {
   const selectedTag = tag || '전체';
   const selectedSort = normalizeSort(sort);
 
-  const allPostsPromise = getPublishedPosts(undefined, selectedSort);
-  const tagsPromise = allPostsPromise.then(getTagsFromPosts);
-  const postsPromise = allPostsPromise.then((posts) => filterPostsByTag(posts, selectedTag));
+  const allPostsPromise = getPublishedPosts({ sort: selectedSort });
+  const tagsPromise = allPostsPromise.then(({ posts }) => getTagsFromPosts(posts));
+  const postsPromise = allPostsPromise.then(({ posts }) => filterPostsByTag(posts, selectedTag));
 
   return (
     <div className="container py-8">
