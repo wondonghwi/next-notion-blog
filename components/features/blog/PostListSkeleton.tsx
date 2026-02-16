@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const POST_SKELETON_ROWS = Array.from({ length: 2 });
+const POST_SKELETON_ROWS = Array.from({ length: 4 });
 
 function PostCardSkeleton() {
   return (

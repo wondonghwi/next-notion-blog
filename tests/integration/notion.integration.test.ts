@@ -89,11 +89,11 @@ describe('Notion 데이터 통합', () => {
     );
 
     const { getPublishedPosts } = await import('@/lib/notion');
-    const posts = await getPublishedPosts(undefined, 'latest');
+    const result = await getPublishedPosts({ sort: 'latest' });
 
     expect(sortDirection).toBe('descending');
-    expect(posts).toHaveLength(1);
-    expect(posts[0]).toMatchObject({
+    expect(result.posts).toHaveLength(1);
+    expect(result.posts[0]).toMatchObject({
       title: '첫 글',
       slug: 'first-post',
       author: '원동휘',
@@ -124,7 +124,7 @@ describe('Notion 데이터 통합', () => {
     );
 
     const { getPublishedPosts } = await import('@/lib/notion');
-    await getPublishedPosts(undefined, 'oldest');
+    await getPublishedPosts({ sort: 'oldest' });
 
     expect(sortDirection).toBe('ascending');
   });
