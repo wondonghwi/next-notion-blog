@@ -1,13 +1,14 @@
 import { Suspense } from 'react';
-import { PostList } from '@/components/features/blog/PostList';
+import { InfinitePostList } from '@/components/features/blog/InfinitePostList';
 import { PostListSkeleton } from '@/components/features/blog/PostListSkeleton';
+import { QueryErrorBoundary } from '@/components/common/QueryErrorBoundary';
 import { TagSection } from '@/app/_components/TagSection';
 import { TagSectionSkeleton } from '@/app/_components/TagSectionSkeleton';
 import { ProfileSection } from '@/app/_components/ProfileSection';
 import { ContactSection } from '@/app/_components/ContactSection';
 import { getPublishedPosts, getTagsFromPosts } from '@/lib/notion';
 import SortSelect from './_components/SortSelect.client';
-import type { Post, PostSort } from '@/types/blog';
+import type { PostSort } from '@/types/blog';
 
 interface HomeProps {
   searchParams: Promise<{ tag?: string; sort?: string }>;
@@ -17,22 +18,14 @@ const normalizeSort = (sort?: string): PostSort => {
   return sort === 'oldest' ? 'oldest' : 'latest';
 };
 
-const filterPostsByTag = (posts: Post[], selectedTag: string) => {
-  if (selectedTag === '전체') {
-    return posts;
-  }
-
-  return posts.filter((post) => post.tags?.some((tag) => tag.name === selectedTag));
-};
-
 export default async function Home({ searchParams }: HomeProps) {
   const { tag, sort } = await searchParams;
   const selectedTag = tag || '전체';
   const selectedSort = normalizeSort(sort);
 
-  const allPostsPromise = getPublishedPosts({ sort: selectedSort });
+  // 태그 목록을 위한 전체 포스트 가져오기
+  const allPostsPromise = getPublishedPosts({});
   const tagsPromise = allPostsPromise.then(({ posts }) => getTagsFromPosts(posts));
-  const postsPromise = allPostsPromise.then(({ posts }) => filterPostsByTag(posts, selectedTag));
 
   return (
     <div className="container py-8">
@@ -56,9 +49,14 @@ export default async function Home({ searchParams }: HomeProps) {
             <SortSelect />
           </div>
 
-          <Suspense fallback={<PostListSkeleton />}>
-            <PostList postsPromise={postsPromise} />
-          </Suspense>
+          <QueryErrorBoundary
+            fallbackTitle="게시글을 불러올 수 없습니다"
+            fallbackMessage="게시글을 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+          >
+            <Suspense fallback={<PostListSkeleton />}>
+              <InfinitePostList tag={selectedTag} sort={selectedSort} pageSize={4} />
+            </Suspense>
+          </QueryErrorBoundary>
         </div>
 
         <aside className="order-3 flex flex-col gap-6">
