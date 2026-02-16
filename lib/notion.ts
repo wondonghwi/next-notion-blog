@@ -121,7 +121,25 @@ export const getPostBySlug = async (slug: string) => {
   };
 };
 
-export const getPublishedPosts = async (tag?: string, sort?: string): Promise<Post[]> => {
+interface GetPublishedPostsParams {
+  tag?: string;
+  sort?: string;
+  pageSize?: number;
+  startCursor?: string;
+}
+
+interface GetPublishedPostsResponse {
+  posts: Post[];
+  has_more: boolean;
+  next_cursor: string | null;
+}
+
+export const getPublishedPosts = async ({
+  tag,
+  sort,
+  pageSize = 2,
+  startCursor,
+}: GetPublishedPostsParams): Promise<GetPublishedPostsResponse> => {
   const normalizedSort = getNormalizedSort(sort);
 
   const response = await notion.databases.query({
@@ -152,9 +170,16 @@ export const getPublishedPosts = async (tag?: string, sort?: string): Promise<Po
         direction: normalizedSort === 'latest' ? 'descending' : 'ascending',
       },
     ],
+    page_size: pageSize,
+    start_cursor: startCursor,
   });
 
-  return response.results.filter(isPageObjectResponse).map(getPostMetaData);
+  const posts = response.results.filter(isPageObjectResponse).map(getPostMetaData);
+  return {
+    posts,
+    has_more: response.has_more,
+    next_cursor: response.next_cursor ?? null,
+  };
 };
 
 export const getTagsFromPosts = (posts: Post[]): TagFilterItem[] => {
@@ -187,6 +212,6 @@ export const getTagsFromPosts = (posts: Post[]): TagFilterItem[] => {
 };
 
 export const getTags = async (): Promise<TagFilterItem[]> => {
-  const posts = await getPublishedPosts();
+  const { posts } = await getPublishedPosts({});
   return getTagsFromPosts(posts);
 };
