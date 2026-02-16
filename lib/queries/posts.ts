@@ -1,23 +1,12 @@
 import { useInfiniteQuery, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import type { GetPublishedPostsResponse } from '@/lib/notion';
 
-// ============================================================================
-// Types
-// ============================================================================
-
 interface UseInfinitePostsParams {
   tag?: string;
   sort?: string;
   pageSize?: number;
 }
 
-// ============================================================================
-// API Functions
-// ============================================================================
-
-/**
- * Fetch posts from API endpoint with pagination support
- */
 export const fetchPosts = async ({
   tag,
   sort,
@@ -45,10 +34,6 @@ export const fetchPosts = async ({
   return response.json();
 };
 
-// ============================================================================
-// Query Keys (Factory Pattern)
-// ============================================================================
-
 export const postsQueryKeys = {
   all: ['posts'] as const,
   lists: () => [...postsQueryKeys.all, 'list'] as const,
@@ -56,14 +41,6 @@ export const postsQueryKeys = {
     [...postsQueryKeys.lists(), filters] as const,
 };
 
-// ============================================================================
-// Query Hooks
-// ============================================================================
-
-/**
- * Legacy hook for backward compatibility
- * Uses manual loading/error states
- */
 export function useInfinitePosts({ tag, sort, pageSize = 6 }: UseInfinitePostsParams = {}) {
   return useInfiniteQuery({
     queryKey: postsQueryKeys.list({ tag, sort, pageSize }),
@@ -79,10 +56,6 @@ export function useInfinitePosts({ tag, sort, pageSize = 6 }: UseInfinitePostsPa
   });
 }
 
-/**
- * Modern Suspense hook for infinite scroll
- * Auto-suspends on loading, auto-throws on error
- */
 export function useSuspenseInfinitePosts({
   tag,
   sort,
@@ -103,7 +76,6 @@ export function useSuspenseInfinitePosts({
 
   return {
     ...query,
-    // Convenience field for flattened posts
     flattenedPosts: query.data.pages.flatMap((page) => page.posts),
   };
 }

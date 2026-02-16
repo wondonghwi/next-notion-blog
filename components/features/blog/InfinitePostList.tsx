@@ -14,24 +14,19 @@ interface InfinitePostListProps {
 }
 
 export function InfinitePostList({ tag, sort, pageSize = 4 }: InfinitePostListProps) {
-  // Suspense query - automatically handles loading/error states!
   const { fetchNextPage, hasNextPage, isFetchingNextPage, flattenedPosts } =
     useSuspenseInfinitePosts({ tag, sort, pageSize });
 
-  // Intersection Observer for automatic infinite scroll
   const { ref, inView } = useInView({
-    threshold: 0.1, // Trigger when 10% visible
-    triggerOnce: false, // Re-trigger on every intersection
+    threshold: 0.1,
   });
 
-  // Auto-fetch next page when observer element is in view
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Empty state (no posts found)
   if (flattenedPosts.length === 0) {
     return (
       <div className="rounded-xl border border-dashed p-10 text-center">
@@ -42,7 +37,6 @@ export function InfinitePostList({ tag, sort, pageSize = 4 }: InfinitePostListPr
 
   return (
     <div className="space-y-4">
-      {/* Post List - Same layout as before */}
       <ul className="grid gap-4">
         {flattenedPosts.map((post, index) => (
           <li key={post.id}>
@@ -53,7 +47,6 @@ export function InfinitePostList({ tag, sort, pageSize = 4 }: InfinitePostListPr
         ))}
       </ul>
 
-      {/* Infinite Scroll Trigger + Loading Indicator */}
       {hasNextPage && (
         <div
           ref={ref}
