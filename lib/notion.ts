@@ -121,14 +121,14 @@ export const getPostBySlug = async (slug: string) => {
   };
 };
 
-interface GetPublishedPostsParams {
+export interface GetPublishedPostsParams {
   tag?: string;
   sort?: string;
   pageSize?: number;
   startCursor?: string;
 }
 
-interface GetPublishedPostsResponse {
+export interface GetPublishedPostsResponse {
   posts: Post[];
   has_more: boolean;
   next_cursor: string | null;
@@ -137,7 +137,7 @@ interface GetPublishedPostsResponse {
 export const getPublishedPosts = async ({
   tag,
   sort,
-  pageSize = 2,
+  pageSize = 4,
   startCursor,
 }: GetPublishedPostsParams): Promise<GetPublishedPostsResponse> => {
   const normalizedSort = getNormalizedSort(sort);
