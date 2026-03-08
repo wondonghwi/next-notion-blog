@@ -43,7 +43,6 @@ export default function PostForm({ createPostAction }: PostFormProps) {
       <Card className="mx-auto max-w-2xl">
         <CardContent className="p-6">
           <fieldset disabled={isPending} className="space-y-6 disabled:opacity-70">
-            {/* 제목 입력 */}
             <div className="space-y-2">
               <Label htmlFor="title">제목</Label>
               <Input
@@ -59,7 +58,6 @@ export default function PostForm({ createPostAction }: PostFormProps) {
               ) : null}
             </div>
 
-            {/* 태그 입력 */}
             <div className="space-y-2">
               <Label htmlFor="tag">태그</Label>
               <Input
@@ -75,7 +73,6 @@ export default function PostForm({ createPostAction }: PostFormProps) {
               ) : null}
             </div>
 
-            {/* 본문 입력 */}
             <div className="space-y-2">
               <Label htmlFor="content">본문</Label>
               <Textarea
@@ -91,7 +88,6 @@ export default function PostForm({ createPostAction }: PostFormProps) {
               ) : null}
             </div>
 
-            {/* 버튼 영역 */}
             <div className="flex items-center justify-between gap-2">
               <p aria-live="polite" className="text-muted-foreground text-sm">
                 {state.message}

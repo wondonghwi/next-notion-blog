@@ -130,7 +130,6 @@ export default async function BlogPost({ params }: BlogPostProps) {
     <div className="container py-12">
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_240px]">
         <section className="min-w-0">
-          {/* 블로그 헤더 */}
           <div className="space-y-4">
             <div className="space-y-2">
               <div className="flex gap-2">
@@ -141,7 +140,6 @@ export default async function BlogPost({ params }: BlogPostProps) {
               <h1 className="text-4xl font-bold">{post.title}</h1>
             </div>
 
-            {/* 메타 정보 */}
             <div className="text-muted-foreground flex gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
@@ -156,7 +154,6 @@ export default async function BlogPost({ params }: BlogPostProps) {
 
           <Separator className="my-8" />
 
-          {/* 블로그 본문 */}
           <div className="prose prose-slate dark:prose-invert prose-headings:scroll-mt-[var(--height-header)] max-w-none">
             <MDXRemote
               source={markdown}
