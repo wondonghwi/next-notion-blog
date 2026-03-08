@@ -48,4 +48,3 @@ next-env.d.ts
 # AI assistant files
 CLAUDE.md
 .claude/
-AGENTS.md
