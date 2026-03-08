@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail } from 'lucide-react';
 
 const contactItems = [
@@ -28,12 +28,13 @@ const contactItems = [
 
 export function ContactSection() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>문의하기</CardTitle>
+    <Card className="overflow-hidden rounded-[28px] border-border/70 bg-card/80 py-0 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.3)] backdrop-blur-xl">
+      <CardHeader className="border-b border-border/60 py-5">
+        <CardTitle className="text-base font-semibold tracking-tight">문의하기</CardTitle>
+        <CardDescription>개인 문의와 협업 제안을 메일로 받습니다.</CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="px-4 py-4">
         <div className="space-y-3">
           {contactItems.map((item) => (
             <a
@@ -41,14 +42,15 @@ export function ContactSection() {
               href={`mailto:${item.mailto.email}?subject=${encodeURIComponent(
                 item.mailto.subject
               )}&body=${encodeURIComponent(item.mailto.body)}`}
-              className="group bg-primary/5 hover:bg-muted flex items-start gap-4 rounded-lg p-3 transition-colors"
+              className="group flex items-start gap-3 rounded-2xl border border-transparent bg-muted/45 p-3 transition-all duration-200 hover:border-primary/15 hover:bg-accent/80"
             >
-              <div className="bg-primary/20 text-primary flex shrink-0 items-center justify-center rounded-md p-1.5">
+              <div className="bg-primary/14 text-primary flex shrink-0 items-center justify-center rounded-xl p-2">
                 <item.icon className="h-4 w-4" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-medium">{item.title}</h3>
-                <p className="text-muted-foreground text-xs">{item.description}</p>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-medium tracking-tight">{item.title}</h3>
+                <p className="text-muted-foreground mt-1 text-xs leading-5">{item.description}</p>
+                <p className="text-muted-foreground mt-2 truncate text-[11px]">{item.mailto.email}</p>
               </div>
             </a>
           ))}

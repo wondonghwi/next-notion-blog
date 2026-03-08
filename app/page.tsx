@@ -39,9 +39,9 @@ export default async function Home({ searchParams }: HomeProps) {
   );
 
   return (
-    <div className="container py-8">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[200px_minmax(0,1fr)_220px]">
-        <aside className="order-2 lg:order-1">
+    <div className="container py-8 md:py-10">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[180px_minmax(0,1fr)_220px] lg:grid-cols-[200px_minmax(0,1fr)_240px] lg:gap-8">
+        <aside className="order-2 md:order-1 md:sticky md:top-[var(--sticky-top)] md:self-start">
           <Suspense fallback={<TagSectionSkeleton />}>
             <TagSection
               tagsPromise={tagsPromise}
@@ -51,13 +51,32 @@ export default async function Home({ searchParams }: HomeProps) {
           </Suspense>
         </aside>
 
-        <div className="order-1 space-y-8 lg:order-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold tracking-tight">
-              {selectedTag === '전체' ? '블로그 목록' : `${selectedTag} 관련 글`}
-            </h2>
+        <div className="order-3 space-y-6 md:order-2 md:space-y-8">
+          <div className="relative overflow-hidden rounded-[28px] border border-border/70 bg-card/80 px-5 py-6 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.35)] backdrop-blur-xl md:px-6">
+            <div className="from-primary/16 via-primary/6 absolute inset-x-0 top-0 h-28 bg-gradient-to-br to-transparent" />
+            <div className="relative flex flex-col gap-5">
+              <div className="space-y-3">
+                <p className="text-muted-foreground text-[0.7rem] font-semibold tracking-[0.24em] uppercase">
+                  Notion-driven archive
+                </p>
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                    {selectedTag === '전체' ? '블로그 목록' : `${selectedTag} 관련 글`}
+                  </h2>
+                  <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+                    노션을 기반으로 정리한 개발 기록과 프론트엔드 실험을 태그별로 모아
+                    두었습니다.
+                  </p>
+                </div>
+              </div>
 
-            <SortSelect />
+              <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-muted-foreground text-sm">
+                  현재 필터: <span className="text-foreground font-medium">{selectedTag}</span>
+                </p>
+                <SortSelect />
+              </div>
+            </div>
           </div>
 
           <QueryErrorBoundary
@@ -72,7 +91,7 @@ export default async function Home({ searchParams }: HomeProps) {
           </QueryErrorBoundary>
         </div>
 
-        <aside className="order-3 flex flex-col gap-6">
+        <aside className="order-1 flex flex-col gap-6 md:order-3 md:sticky md:top-[var(--sticky-top)] md:self-start">
           <ProfileSection />
           <ContactSection />
         </aside>
