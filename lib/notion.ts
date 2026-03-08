@@ -1,7 +1,8 @@
-import { Client } from '@notionhq/client';
+import { Client, isFullPage } from '@notionhq/client';
 import type { Post, PostSort, TagFilterItem } from '@/types/blog';
 import type {
   PageObjectResponse,
+  PartialPageObjectResponse,
   QueryDatabaseResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 import { NotionToMarkdown } from 'notion-to-md';
@@ -24,11 +25,20 @@ const getDatabaseId = () => {
   return databaseId;
 };
 
+const normalizeNotionId = (value: string) => value.replace(/-/g, '').toLowerCase();
+
+const isNotionPageId = (value: string) =>
+  /^[0-9a-f]{32}$/i.test(value) || /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value);
+
 const isPageObjectResponse = (
   page: QueryDatabaseResponse['results'][number]
 ): page is PageObjectResponse => {
   return 'properties' in page;
 };
+
+const isFullPageObjectResponse = (
+  page: PageObjectResponse | PartialPageObjectResponse
+): page is PageObjectResponse => isFullPage(page);
 
 const getNormalizedSort = (sort?: string): PostSort => {
   return sort === 'oldest' ? 'oldest' : 'latest';
@@ -45,6 +55,23 @@ const getCoverImage = (cover: PageObjectResponse['cover']) => {
     default:
       return '';
   }
+};
+
+const isPublishedPage = (page: PageObjectResponse) =>
+  page.properties.Status.type === 'select' && page.properties.Status.select?.name === 'Published';
+
+const isSameDatabaseParent = (page: PageObjectResponse) =>
+  page.parent.type === 'database_id' &&
+  normalizeNotionId(page.parent.database_id) === normalizeNotionId(getDatabaseId());
+
+const getPostDetail = async (page: PageObjectResponse) => {
+  const mdBlocks = await n2m.pageToMarkdown(page.id);
+  const { parent } = n2m.toMarkdownString(mdBlocks);
+
+  return {
+    markdown: parent,
+    post: getPostMetaData(page),
+  };
 };
 
 const getPostMetaData = (page: PageObjectResponse): Post => {
@@ -108,17 +135,25 @@ export const getPostBySlug = async (slug: string) => {
   });
 
   const page = response.results.find(isPageObjectResponse);
-  if (!page) {
+  if (page) {
+    return getPostDetail(page);
+  }
+
+  if (!isNotionPageId(slug)) {
     return null;
   }
 
-  const mdBlocks = await n2m.pageToMarkdown(page.id);
-  const { parent } = n2m.toMarkdownString(mdBlocks);
+  const fallbackPage = await notion.pages.retrieve({ page_id: slug });
 
-  return {
-    markdown: parent,
-    post: getPostMetaData(page),
-  };
+  if (!isFullPageObjectResponse(fallbackPage)) {
+    return null;
+  }
+
+  if (!isSameDatabaseParent(fallbackPage) || !isPublishedPage(fallbackPage)) {
+    return null;
+  }
+
+  return getPostDetail(fallbackPage);
 };
 
 export interface GetPublishedPostsParams {
@@ -214,4 +249,73 @@ export const getTagsFromPosts = (posts: Post[]): TagFilterItem[] => {
 export const getTags = async (): Promise<TagFilterItem[]> => {
   const { posts } = await getPublishedPosts({});
   return getTagsFromPosts(posts);
+};
+
+export interface CreatePostParams {
+  title: string;
+  tag: string;
+  content: string;
+}
+
+export const createPost = async ({ title, tag, content }: CreatePostParams) => {
+  const createdPage = await notion.pages.create({
+    parent: {
+      database_id: getDatabaseId(),
+    },
+    properties: {
+      Title: {
+        title: [
+          {
+            text: {
+              content: title,
+            },
+          },
+        ],
+      },
+      Description: {
+        rich_text: [
+          {
+            text: {
+              content: content,
+            },
+          },
+        ],
+      },
+      Tags: {
+        multi_select: [{ name: tag }],
+      },
+      Status: {
+        select: {
+          name: 'Published',
+        },
+      },
+      Date: {
+        date: {
+          start: new Date().toISOString(),
+        },
+      },
+    },
+  });
+
+  const slug = createdPage.id;
+
+  await notion.pages.update({
+    page_id: createdPage.id,
+    properties: {
+      Slug: {
+        rich_text: [
+          {
+            text: {
+              content: slug,
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  return {
+    id: createdPage.id,
+    slug,
+  };
 };
