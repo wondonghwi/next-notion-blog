@@ -13,10 +13,15 @@ vi.mock('@/lib/notion', () => ({
   getTagsFromPosts: vi.fn(),
 }));
 
-// Mock the queries hook to avoid real API calls
-vi.mock('@/lib/queries/posts', () => ({
-  useSuspenseInfinitePosts: vi.fn(),
-}));
+// Mock the suspense hook while keeping query key helpers for server prefetch
+vi.mock('@/lib/queries/posts', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/queries/posts')>();
+
+  return {
+    ...actual,
+    useSuspenseInfinitePosts: vi.fn(),
+  };
+});
 
 import Home from '@/app/page';
 import { getPublishedPosts, getTagsFromPosts } from '@/lib/notion';
@@ -94,6 +99,12 @@ describe('홈 페이지 통합', () => {
     await renderHome();
 
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith({});
+    expect(mockedGetPublishedPosts).toHaveBeenCalledWith({
+      tag: '전체',
+      sort: 'latest',
+      pageSize: 4,
+      startCursor: undefined,
+    });
     await waitFor(
       () => {
         expect(mockedGetTagsFromPosts).toHaveBeenCalledWith(allPosts);
@@ -129,6 +140,12 @@ describe('홈 페이지 통합', () => {
     await renderHome({ tag: 'React', sort: 'oldest' });
 
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith({});
+    expect(mockedGetPublishedPosts).toHaveBeenCalledWith({
+      tag: 'React',
+      sort: 'oldest',
+      pageSize: 4,
+      startCursor: undefined,
+    });
     expect(screen.getByRole('heading', { name: 'React 관련 글' })).toBeInTheDocument();
     await waitFor(
       () => {
@@ -153,6 +170,12 @@ describe('홈 페이지 통합', () => {
     } as any);
 
     await renderHome({ tag: 'TypeScript', sort: 'latest' });
+    expect(mockedGetPublishedPosts).toHaveBeenCalledWith({
+      tag: 'TypeScript',
+      sort: 'latest',
+      pageSize: 4,
+      startCursor: undefined,
+    });
 
     await waitFor(
       () => {
