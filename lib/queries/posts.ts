@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import type { GetPublishedPostsResponse } from '@/lib/notion';
 
-interface UseInfinitePostsParams {
+export interface UseInfinitePostsParams {
   tag?: string;
   sort?: string;
   pageSize?: number;
@@ -41,10 +41,14 @@ export const postsQueryKeys = {
     [...postsQueryKeys.lists(), filters] as const,
 };
 
-export function useInfinitePosts({ tag, sort, pageSize = 6 }: UseInfinitePostsParams = {}) {
-  return useInfiniteQuery({
+export function getInfinitePostsQueryOptions({
+  tag,
+  sort,
+  pageSize = 4,
+}: UseInfinitePostsParams = {}) {
+  return {
     queryKey: postsQueryKeys.list({ tag, sort, pageSize }),
-    queryFn: ({ pageParam }) =>
+    queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
       fetchPosts({
         tag,
         sort,
@@ -52,8 +56,12 @@ export function useInfinitePosts({ tag, sort, pageSize = 6 }: UseInfinitePostsPa
         startCursor: pageParam,
       }),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
-  });
+    getNextPageParam: (lastPage: GetPublishedPostsResponse) => lastPage.next_cursor ?? undefined,
+  };
+}
+
+export function useInfinitePosts({ tag, sort, pageSize = 6 }: UseInfinitePostsParams = {}) {
+  return useInfiniteQuery(getInfinitePostsQueryOptions({ tag, sort, pageSize }));
 }
 
 export function useSuspenseInfinitePosts({
@@ -61,18 +69,7 @@ export function useSuspenseInfinitePosts({
   sort,
   pageSize = 4,
 }: UseInfinitePostsParams = {}) {
-  const query = useSuspenseInfiniteQuery({
-    queryKey: postsQueryKeys.list({ tag, sort, pageSize }),
-    queryFn: ({ pageParam }) =>
-      fetchPosts({
-        tag,
-        sort,
-        pageSize,
-        startCursor: pageParam,
-      }),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
-  });
+  const query = useSuspenseInfiniteQuery(getInfinitePostsQueryOptions({ tag, sort, pageSize }));
 
   return {
     ...query,

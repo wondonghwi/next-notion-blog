@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { InfinitePostList } from '@/components/features/blog/InfinitePostList';
 import { PostListSkeleton } from '@/components/features/blog/PostListSkeleton';
 import { QueryErrorBoundary } from '@/components/common/QueryErrorBoundary';
@@ -7,6 +8,8 @@ import { TagSectionSkeleton } from '@/app/_components/TagSectionSkeleton';
 import { ProfileSection } from '@/app/_components/ProfileSection';
 import { ContactSection } from '@/app/_components/ContactSection';
 import { getPublishedPosts, getTagsFromPosts } from '@/lib/notion';
+import { getServerInfinitePostsQueryOptions } from '@/lib/queries/posts.server';
+import { getQueryClient } from '@/lib/react-query/queryClient';
 import SortSelect from './_components/SortSelect.client';
 import type { PostSort } from '@/types/blog';
 
@@ -22,10 +25,18 @@ export default async function Home({ searchParams }: HomeProps) {
   const { tag, sort } = await searchParams;
   const selectedTag = tag || '전체';
   const selectedSort = normalizeSort(sort);
+  const queryClient = getQueryClient();
 
   // 태그 목록을 위한 전체 포스트 가져오기
   const allPostsPromise = getPublishedPosts({});
   const tagsPromise = allPostsPromise.then(({ posts }) => getTagsFromPosts(posts));
+  await queryClient.prefetchInfiniteQuery(
+    getServerInfinitePostsQueryOptions({
+      tag: selectedTag,
+      sort: selectedSort,
+      pageSize: 4,
+    })
+  );
 
   return (
     <div className="container py-8">
@@ -53,9 +64,11 @@ export default async function Home({ searchParams }: HomeProps) {
             fallbackTitle="게시글을 불러올 수 없습니다"
             fallbackMessage="게시글을 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
           >
-            <Suspense fallback={<PostListSkeleton />}>
-              <InfinitePostList tag={selectedTag} sort={selectedSort} pageSize={4} />
-            </Suspense>
+            <HydrationBoundary state={dehydrate(queryClient)}>
+              <Suspense fallback={<PostListSkeleton />}>
+                <InfinitePostList tag={selectedTag} sort={selectedSort} pageSize={4} />
+              </Suspense>
+            </HydrationBoundary>
           </QueryErrorBoundary>
         </div>
 
