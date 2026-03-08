@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: '원동휘',
-  description: '원동휘의 개인 블로그',
+  description: '원동휘의 개인 아카이브',
 };
 
 export default function RootLayout({

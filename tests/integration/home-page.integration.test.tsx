@@ -111,7 +111,7 @@ describe('홈 페이지 통합', () => {
       },
       { timeout: 3000 }
     );
-    expect(screen.getByRole('heading', { name: '블로그 목록' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '전체 글' })).toBeInTheDocument();
     await waitFor(
       () => {
         expect(document.querySelector('a[href="/blog/first-post"]')).toBeInTheDocument();
