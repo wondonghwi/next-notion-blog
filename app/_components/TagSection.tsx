@@ -1,5 +1,5 @@
 import { use } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { PostSort, TagFilterItem } from '@/types/blog';
 import Link from 'next/link';
@@ -14,28 +14,42 @@ export function TagSection({ tagsPromise, selectedTag, selectedSort }: TagSectio
   const tags = use(tagsPromise);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>태그 목록</CardTitle>
+    <Card className="overflow-hidden rounded-[28px] border-border/70 bg-card/80 py-0 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.3)] backdrop-blur-xl">
+      <CardHeader className="border-b border-border/60 py-5">
+        <CardTitle className="text-base font-semibold tracking-tight">태그 목록</CardTitle>
+        <CardDescription>관심 있는 주제로 빠르게 이동해보세요.</CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <div className="flex flex-col gap-3">
+      <CardContent className="px-4 py-4">
+        <div className="flex flex-col gap-2">
           {tags.map((tag) => {
             const params = new URLSearchParams();
             params.set('tag', tag.name);
             params.set('sort', selectedSort);
 
             return (
-              <Link href={`?${params.toString()}`} key={tag.id}>
+              <Link href={`?${params.toString()}`} key={tag.id} className="block">
                 <div
                   className={cn(
-                    'hover:bg-muted-foreground/10 text-muted-foreground flex items-center justify-between rounded-md p-1.5 text-sm transition-colors',
-                    selectedTag === tag.name && 'bg-muted-foreground/10 text-foreground font-medium'
+                    'flex items-center justify-between gap-3 rounded-2xl px-3 py-3 text-sm transition-all duration-200',
+                    'text-muted-foreground hover:bg-accent/75 hover:text-foreground',
+                    selectedTag === tag.name &&
+                      'bg-accent text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]'
                   )}
                 >
-                  <span>{tag.name}</span>
-                  <span>{tag.count}</span>
+                  <span className={cn('truncate', selectedTag === tag.name && 'font-medium')}>
+                    {tag.name}
+                  </span>
+                  <span
+                    className={cn(
+                      'rounded-full px-2 py-0.5 text-xs font-medium',
+                      selectedTag === tag.name
+                        ? 'bg-background/70 text-foreground'
+                        : 'bg-muted text-muted-foreground'
+                    )}
+                  >
+                    {tag.count}
+                  </span>
                 </div>
               </Link>
             );

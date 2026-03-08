@@ -44,7 +44,7 @@ export const postsQueryKeys = {
 export function getInfinitePostsQueryOptions({
   tag,
   sort,
-  pageSize = 4,
+  pageSize = 10,
 }: UseInfinitePostsParams = {}) {
   return {
     queryKey: postsQueryKeys.list({ tag, sort, pageSize }),
@@ -60,14 +60,14 @@ export function getInfinitePostsQueryOptions({
   };
 }
 
-export function useInfinitePosts({ tag, sort, pageSize = 6 }: UseInfinitePostsParams = {}) {
+export function useInfinitePosts({ tag, sort, pageSize = 10 }: UseInfinitePostsParams = {}) {
   return useInfiniteQuery(getInfinitePostsQueryOptions({ tag, sort, pageSize }));
 }
 
 export function useSuspenseInfinitePosts({
   tag,
   sort,
-  pageSize = 4,
+  pageSize = 10,
 }: UseInfinitePostsParams = {}) {
   const query = useSuspenseInfiniteQuery(getInfinitePostsQueryOptions({ tag, sort, pageSize }));
 

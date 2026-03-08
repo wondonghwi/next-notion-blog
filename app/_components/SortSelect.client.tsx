@@ -24,7 +24,7 @@ export default function SortSelect() {
 
   return (
     <Select value={selectedSort} onValueChange={handleValueChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-full rounded-2xl border-border/70 bg-background/80 shadow-none sm:w-[180px]">
         <SelectValue placeholder="정렬 방식 선택" />
       </SelectTrigger>
       <SelectContent>

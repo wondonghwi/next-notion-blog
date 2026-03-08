@@ -18,12 +18,13 @@ const socialLinks = [
 
 export function ProfileSection() {
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="space-y-4">
+    <Card className="overflow-hidden rounded-[28px] border-border/70 bg-card/80 py-0 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.3)] backdrop-blur-xl">
+      <div className="from-primary/18 via-primary/6 h-16 bg-gradient-to-br to-transparent" />
+      <CardContent className="-mt-8 px-5 pb-5">
+        <div className="space-y-5">
           <div className="flex justify-center">
-            <div className="bg-muted rounded-full p-2">
-              <div className="h-36 w-36 overflow-hidden rounded-full">
+            <div className="bg-background/90 rounded-full border border-border/70 p-2 shadow-lg">
+              <div className="h-28 w-28 overflow-hidden rounded-full md:h-32 md:w-32">
                 <Image
                   src="/images/profile.webp"
                   alt="profile"
@@ -35,14 +36,23 @@ export function ProfileSection() {
             </div>
           </div>
 
-          <div className="text-center">
-            <h3 className="text-lg font-bold">원동휘</h3>
-            <p className="text-primary text-sm">Frontend Developer</p>
+          <div className="space-y-1 text-center">
+            <p className="text-muted-foreground text-[0.68rem] font-semibold tracking-[0.24em] uppercase">
+              Profile
+            </p>
+            <h3 className="text-xl font-semibold tracking-tight">원동휘</h3>
+            <p className="text-primary text-sm font-medium">Frontend Developer</p>
           </div>
 
           <div className="flex justify-center gap-2">
             {socialLinks.map((item) => (
-              <Button key={item.id} variant="ghost" className="bg-primary/10" size="icon" asChild>
+              <Button
+                key={item.id}
+                variant="ghost"
+                className="bg-primary/10 text-primary hover:bg-primary/15 rounded-full"
+                size="icon"
+                asChild
+              >
                 <a href={item.href} target="_blank" rel="noopener noreferrer">
                   <item.icon className="h-4 w-4" />
                 </a>
@@ -50,8 +60,8 @@ export function ProfileSection() {
             ))}
           </div>
 
-          <p className="bg-primary/10 rounded p-2 text-center text-sm">
-            ✨ 11번가 프론트엔드 개발자 ✨
+          <p className="bg-primary/8 rounded-2xl border border-primary/15 px-3 py-3 text-center text-sm leading-6">
+            프론트엔드 설계와 인터랙션, 제품 완성도를 꾸준히 다듬고 있습니다.
           </p>
         </div>
       </CardContent>

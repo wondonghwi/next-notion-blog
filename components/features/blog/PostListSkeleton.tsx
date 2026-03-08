@@ -5,7 +5,7 @@ const POST_SKELETON_ROWS = Array.from({ length: 4 });
 
 function PostCardSkeleton() {
   return (
-    <Card className="bg-card/50 border-border/40 gap-0 overflow-hidden py-0">
+    <Card className="bg-card/50 border-border/60 gap-0 overflow-hidden rounded-[28px] py-0 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.28)]">
       <Skeleton className="aspect-[2/1] w-full rounded-none" />
       <CardContent className="p-6">
         <div className="mb-4 flex gap-2">
