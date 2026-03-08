@@ -22,19 +22,19 @@ export default function Error({ error, reset }: ErrorProps) {
         <Card className="max-w-md">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-destructive" />
+              <AlertCircle className="text-destructive h-5 w-5" />
               <CardTitle>오류가 발생했습니다</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              게시글을 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.
+            <p className="text-muted-foreground text-sm">
+              페이지를 표시하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.
             </p>
 
             {process.env.NODE_ENV === 'development' && (
               <details className="text-xs">
                 <summary className="cursor-pointer font-medium">에러 상세 (개발 모드)</summary>
-                <pre className="mt-2 overflow-auto rounded bg-muted p-2">{error.message}</pre>
+                <pre className="bg-muted mt-2 overflow-auto rounded p-2">{error.message}</pre>
               </details>
             )}
 

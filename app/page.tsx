@@ -61,7 +61,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 </p>
                 <div className="space-y-2">
                   <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                    {selectedTag === '전체' ? '블로그 목록' : `${selectedTag} 관련 글`}
+                    {selectedTag === '전체' ? '전체 글' : `${selectedTag} 관련 글`}
                   </h2>
                   <p className="text-muted-foreground max-w-2xl text-sm leading-6">
                     노션을 기반으로 정리한 개발 기록과 프론트엔드 실험을 태그별로 모아

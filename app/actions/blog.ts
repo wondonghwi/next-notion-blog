@@ -54,7 +54,7 @@ export async function createPostAction(
   } catch (error) {
     console.error(error);
     return {
-      message: '블로그 생성 실패',
+      message: '글 생성 실패',
       formData: rawDataFormData,
     };
   }
