@@ -56,6 +56,9 @@ importers:
       next-mdx-remote-client:
         specifier: ^2.1.7
         version: 2.1.7(@types/react@19.1.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(unified@11.0.5)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       notion-to-md:
         specifier: ^3.1.9
         version: 3.1.9
@@ -3613,6 +3616,12 @@ packages:
     peerDependencies:
       react: ^19.1
       react-dom: ^19.1
+
+  next-themes@0.4.6:
+    resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
 
   next@15.5.12:
     resolution: {integrity: sha512-Fi/wQ4Etlrn60rz78bebG1i1SR20QxvV8tVp6iJspjLUSHcZoeUXCt+vmWoEcza85ElZzExK/jJ/F6SvtGktjA==}
@@ -8455,6 +8464,11 @@ snapshots:
       - '@types/react'
       - supports-color
       - unified
+
+  next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   next@15.5.12(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
