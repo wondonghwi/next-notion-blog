@@ -34,7 +34,7 @@ export default async function Home({ searchParams }: HomeProps) {
     getServerInfinitePostsQueryOptions({
       tag: selectedTag,
       sort: selectedSort,
-      pageSize: 4,
+      pageSize: 10,
     })
   );
 
@@ -66,7 +66,7 @@ export default async function Home({ searchParams }: HomeProps) {
           >
             <HydrationBoundary state={dehydrate(queryClient)}>
               <Suspense fallback={<PostListSkeleton />}>
-                <InfinitePostList tag={selectedTag} sort={selectedSort} pageSize={4} />
+                <InfinitePostList tag={selectedTag} sort={selectedSort} pageSize={10} />
               </Suspense>
             </HydrationBoundary>
           </QueryErrorBoundary>

@@ -5,7 +5,7 @@ import { postsQueryKeys, type UseInfinitePostsParams } from '@/lib/queries/posts
 export function getServerInfinitePostsQueryOptions({
   tag,
   sort,
-  pageSize = 4,
+  pageSize = 10,
 }: UseInfinitePostsParams = {}) {
   return {
     queryKey: postsQueryKeys.list({ tag, sort, pageSize }),

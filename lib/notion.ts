@@ -172,7 +172,7 @@ export interface GetPublishedPostsResponse {
 export const getPublishedPosts = async ({
   tag,
   sort,
-  pageSize = 4,
+  pageSize = 10,
   startCursor,
 }: GetPublishedPostsParams): Promise<GetPublishedPostsResponse> => {
   const normalizedSort = getNormalizedSort(sort);

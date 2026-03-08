@@ -102,7 +102,7 @@ describe('홈 페이지 통합', () => {
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith({
       tag: '전체',
       sort: 'latest',
-      pageSize: 4,
+      pageSize: 10,
       startCursor: undefined,
     });
     await waitFor(
@@ -143,7 +143,7 @@ describe('홈 페이지 통합', () => {
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith({
       tag: 'React',
       sort: 'oldest',
-      pageSize: 4,
+      pageSize: 10,
       startCursor: undefined,
     });
     expect(screen.getByRole('heading', { name: 'React 관련 글' })).toBeInTheDocument();
@@ -173,7 +173,7 @@ describe('홈 페이지 통합', () => {
     expect(mockedGetPublishedPosts).toHaveBeenCalledWith({
       tag: 'TypeScript',
       sort: 'latest',
-      pageSize: 4,
+      pageSize: 10,
       startCursor: undefined,
     });
 

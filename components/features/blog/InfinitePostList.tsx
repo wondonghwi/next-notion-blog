@@ -13,7 +13,7 @@ interface InfinitePostListProps {
   pageSize?: number;
 }
 
-export function InfinitePostList({ tag, sort, pageSize = 4 }: InfinitePostListProps) {
+export function InfinitePostList({ tag, sort, pageSize = 10 }: InfinitePostListProps) {
   const { fetchNextPage, hasNextPage, isFetchingNextPage, flattenedPosts } =
     useSuspenseInfinitePosts({ tag, sort, pageSize });
 
