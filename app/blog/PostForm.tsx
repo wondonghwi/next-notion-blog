@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
+import type { PostFormState } from '@/app/actions/blog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -10,39 +11,38 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
 interface PostFormProps {
-  createPostAction: (formData: FormData) => Promise<void>;
+  createPostAction: (prevState: PostFormState, formData: FormData) => Promise<PostFormState>;
 }
 
-function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
+const initialState: PostFormState = {
+  message: '',
+  errors: {},
+  formData: {
+    title: '',
+    tag: '',
+    content: '',
+  },
+};
+
+function SubmitButton() {
   const { pending } = useFormStatus();
-  const isLocked = pending || isSubmitting;
 
   return (
-    <Button type="submit" disabled={isLocked} aria-disabled={isLocked}>
-      {isLocked ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      {isLocked ? '발행 중...' : '발행하기'}
+    <Button type="submit" disabled={pending} aria-disabled={pending}>
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+      {pending ? '발행 중...' : '발행하기'}
     </Button>
   );
 }
 
 export default function PostForm({ createPostAction }: PostFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const submittedRef = useRef(false);
-
-  const handleSubmit = () => {
-    if (submittedRef.current) {
-      return;
-    }
-
-    submittedRef.current = true;
-    setIsSubmitting(true);
-  };
+  const [state, formAction, isPending] = useActionState(createPostAction, initialState);
 
   return (
-    <form action={createPostAction} onSubmit={handleSubmit}>
+    <form action={formAction}>
       <Card className="mx-auto max-w-2xl">
         <CardContent className="p-6">
-          <fieldset disabled={isSubmitting} className="space-y-6 disabled:opacity-70">
+          <fieldset disabled={isPending} className="space-y-6 disabled:opacity-70">
             {/* 제목 입력 */}
             <div className="space-y-2">
               <Label htmlFor="title">제목</Label>
@@ -51,13 +51,28 @@ export default function PostForm({ createPostAction }: PostFormProps) {
                 name="title"
                 placeholder="제목을 입력해주세요"
                 className="h-12 text-lg"
+                defaultValue={state.formData?.title ?? ''}
+                aria-invalid={Boolean(state.errors?.title?.length)}
               />
+              {state.errors?.title?.[0] ? (
+                <p className="text-destructive text-sm">{state.errors.title[0]}</p>
+              ) : null}
             </div>
 
             {/* 태그 입력 */}
             <div className="space-y-2">
               <Label htmlFor="tag">태그</Label>
-              <Input id="tag" name="tag" placeholder="태그를 입력해주세요" className="h-12" />
+              <Input
+                id="tag"
+                name="tag"
+                placeholder="태그를 입력해주세요"
+                className="h-12"
+                defaultValue={state.formData?.tag ?? ''}
+                aria-invalid={Boolean(state.errors?.tag?.length)}
+              />
+              {state.errors?.tag?.[0] ? (
+                <p className="text-destructive text-sm">{state.errors.tag[0]}</p>
+              ) : null}
             </div>
 
             {/* 본문 입력 */}
@@ -68,12 +83,20 @@ export default function PostForm({ createPostAction }: PostFormProps) {
                 name="content"
                 placeholder="작성해주세요"
                 className="min-h-[400px] resize-none"
+                defaultValue={state.formData?.content ?? ''}
+                aria-invalid={Boolean(state.errors?.content?.length)}
               />
+              {state.errors?.content?.[0] ? (
+                <p className="text-destructive text-sm">{state.errors.content[0]}</p>
+              ) : null}
             </div>
 
             {/* 버튼 영역 */}
-            <div className="flex justify-end gap-2">
-              <SubmitButton isSubmitting={isSubmitting} />
+            <div className="flex items-center justify-between gap-2">
+              <p aria-live="polite" className="text-muted-foreground text-sm">
+                {state.message}
+              </p>
+              <SubmitButton />
             </div>
           </fieldset>
         </CardContent>
