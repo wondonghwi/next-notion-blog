@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const siteConfig = {
   name: '원동휘',
   description: '원동휘의 개인 아카이브',
-  siteUrl: 'https://next-notion-blog-wondonghwis-projects.vercel.app',
+  siteUrl: 'https://next-notion-blog-topaz.vercel.app',
   defaultOgImage: '/images/profile.webp',
 } as const;
 
