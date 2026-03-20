@@ -6,24 +6,10 @@ export default function Header() {
   return (
     <header className="bg-background sticky top-0 z-50 border-b">
       <div className="justify container flex h-[var(--height-header)] items-center">
-        <div className="grid w-full grid-cols-3 items-center">
-          <div className="flex items-center justify-start">
-            <Link href="/" className="text-xl font-semibold">
-              <span className="font-bold">원동휘 블로그</span>
-            </Link>
-          </div>
-
-          <nav className="ml-auto flex items-center justify-center gap-4">
-            <Link href="/" className="hover:text-primary font-medium">
-              홈
-            </Link>
-            <Link href="/blog" className="hover:text-primary font-medium">
-              블로그
-            </Link>
-            <Link href="/about" className="hover:text-primary font-medium">
-              소개
-            </Link>
-          </nav>
+        <div className="flex w-full items-center justify-between gap-4">
+          <Link href="/" className="text-xl font-semibold">
+            <span className="font-bold">원동휘</span>
+          </Link>
 
           <div className="flex items-center justify-end gap-2">
             <ThemeToggle />

@@ -57,7 +57,9 @@ describe('블로그 상세 페이지 통합', () => {
 
     expect(screen.getByRole('heading', { name: '테스트 포스트' })).toBeInTheDocument();
     expect(screen.getByTestId('mdx-content')).toHaveTextContent('# 테스트 본문');
-    expect(screen.getByText('이전/다음 글 탐색 기능은 준비 중입니다.')).toBeInTheDocument();
+    expect(
+      screen.getByText('이전/다음 글 탐색 기능은 준비 중입니다. 홈에서 다른 글을 바로 이어서 확인할 수 있습니다.')
+    ).toBeInTheDocument();
     expect(document.querySelector('a[href="/blog/previous-post"]')).not.toBeInTheDocument();
     expect(document.querySelector('a[href="/blog/next-post"]')).not.toBeInTheDocument();
   });

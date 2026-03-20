@@ -1,126 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { ArrowLeft, CalendarDays, User } from 'lucide-react';
+import { createArticleMetadata, siteConfig } from '@/lib/metadata';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { CalendarDays, User } from 'lucide-react';
-import { createArticleMetadata, siteConfig } from '@/lib/metadata';
+import { Button } from '@/components/ui/button';
 import { getPostBySlug } from '@/lib/notion';
 import { formatDateToKorean } from '@/lib/date';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-
-interface TableOfContentsItem {
-  id: string;
-  title: string;
-  items?: TableOfContentsItem[];
-}
-
-const mockTableOfContents: TableOfContentsItem[] = [
-  {
-    id: 'intro',
-    title: '소개',
-    items: [],
-  },
-  {
-    id: 'getting-started',
-    title: '시작하기',
-    items: [
-      {
-        id: 'prerequisites',
-        title: '사전 준비사항',
-        items: [
-          {
-            id: 'node-installation',
-            title: 'Node.js 설치',
-          },
-          {
-            id: 'npm-setup',
-            title: 'NPM 설정',
-          },
-        ],
-      },
-      {
-        id: 'project-setup',
-        title: '프로젝트 설정',
-        items: [
-          {
-            id: 'create-project',
-            title: '프로젝트 생성',
-          },
-          {
-            id: 'folder-structure',
-            title: '폴더 구조',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'shadcn-ui-setup',
-    title: 'Shadcn UI 설정하기',
-    items: [
-      {
-        id: 'installation',
-        title: '설치 방법',
-        items: [
-          {
-            id: 'cli-installation',
-            title: 'CLI 도구 설치',
-          },
-          {
-            id: 'component-setup',
-            title: '컴포넌트 설정',
-          },
-        ],
-      },
-      {
-        id: 'configuration',
-        title: '환경 설정',
-        items: [
-          {
-            id: 'theme-setup',
-            title: '테마 설정',
-          },
-          {
-            id: 'typography',
-            title: '타이포그래피',
-          },
-        ],
-      },
-    ],
-  },
-];
-
-function TableOfContentsLink({
-  item,
-  level = 0,
-}: {
-  item: TableOfContentsItem;
-  level?: number;
-}) {
-  return (
-    <div className="space-y-2">
-      <Link
-        key={item.id}
-        href={`#${item.id}`}
-        className="text-muted-foreground hover:text-foreground block rounded-xl px-3 py-2 text-sm font-medium tracking-tight transition-colors hover:bg-accent/70"
-        style={{ paddingLeft: `${0.75 + level * 0.75}rem` }}
-      >
-        {item.title}
-      </Link>
-      {item.items && item.items.length > 0 && (
-        <div className="space-y-2">
-          {item.items.map((subItem) => (
-            <TableOfContentsLink key={subItem.id} item={subItem} level={level + 1} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 interface BlogPostProps {
   params: Promise<{ slug: string }>;
@@ -158,110 +50,118 @@ export default async function BlogPost({ params }: BlogPostProps) {
   }
 
   const { markdown, post } = postData;
+  const tags = post.tags?.filter((tag) => tag?.id && tag?.name) ?? [];
 
   return (
-    <div className="container py-6 md:py-8 lg:py-12">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-[220px_minmax(0,1fr)_240px] md:gap-8">
-        <aside className="hidden md:block" aria-hidden="true" />
-        <section className="min-w-0">
-          <article className="overflow-hidden rounded-[30px] border border-border/70 bg-card/80 shadow-[0_30px_80px_-48px_rgba(15,23,42,0.32)] backdrop-blur-xl">
-            <div className="from-primary/14 via-primary/5 relative bg-gradient-to-br to-transparent px-5 py-6 md:px-8 md:py-8">
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags?.map((tag) => (
-                      <Badge
-                        key={tag.id}
-                        className="rounded-full bg-primary/10 px-3 py-1 text-primary shadow-none"
-                        variant="secondary"
-                      >
-                        {tag.name}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="space-y-3">
-                    <p className="text-muted-foreground text-[0.7rem] font-semibold tracking-[0.24em] uppercase">
-                      Article
-                    </p>
-                    <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-                      {post.title}
-                    </h1>
-                    {post.description ? (
-                      <p className="text-muted-foreground max-w-3xl text-sm leading-6 md:text-base">
-                        {post.description}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
+    <div className="container py-6 md:py-10 lg:py-14">
+      <section className="mx-auto max-w-4xl space-y-6 md:space-y-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <Button asChild variant="ghost" className="w-fit rounded-full px-0 text-sm font-medium">
+            <Link href="/">
+              <ArrowLeft className="h-4 w-4" />
+              홈으로 돌아가기
+            </Link>
+          </Button>
 
-                <div className="text-muted-foreground flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-                  <div className="flex items-center gap-1.5 rounded-full bg-background/70 px-3 py-1.5">
+          <p className="text-muted-foreground text-[0.7rem] font-semibold tracking-[0.24em] uppercase">
+            Notion article
+          </p>
+        </div>
+
+        <article className="overflow-hidden rounded-[32px] border border-border/70 bg-card/80 shadow-[0_34px_90px_-54px_rgba(15,23,42,0.4)] backdrop-blur-xl">
+          {post.coverImage ? (
+            <div className="relative aspect-[16/7] overflow-hidden border-b border-border/70">
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 960px"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/10" />
+            </div>
+          ) : null}
+
+          <div className="from-primary/16 via-primary/6 relative bg-gradient-to-br to-transparent px-6 py-8 md:px-10 md:py-10">
+            <div className="space-y-6">
+              {tags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <Badge
+                      key={tag.id}
+                      variant="secondary"
+                      className="rounded-full bg-primary/10 px-3 py-1 text-primary shadow-none"
+                    >
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+              ) : null}
+
+              <div className="space-y-4">
+                <p className="text-muted-foreground text-[0.7rem] font-semibold tracking-[0.24em] uppercase">
+                  Article
+                </p>
+                <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-balance md:text-5xl md:leading-[1.08]">
+                  {post.title}
+                </h1>
+                {post.description ? (
+                  <p className="text-muted-foreground max-w-3xl text-sm leading-7 md:text-lg">
+                    {post.description}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
+                {post.author ? (
+                  <div className="flex items-center gap-1.5 rounded-full bg-background/80 px-3.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
                     <User className="h-4 w-4" />
                     <span>{post.author}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 rounded-full bg-background/70 px-3 py-1.5">
+                ) : null}
+
+                {post.date ? (
+                  <div className="flex items-center gap-1.5 rounded-full bg-background/80 px-3.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
                     <CalendarDays className="h-4 w-4" />
-                    <span>{post.date ? formatDateToKorean(post.date) : ''}</span>
+                    <span>{formatDateToKorean(post.date)}</span>
                   </div>
-                </div>
+                ) : null}
               </div>
-            </div>
-
-            <Separator className="bg-border/70" />
-
-            <div className="px-5 py-5 md:hidden">
-              <details className="rounded-2xl border border-border/70 bg-muted/55 p-4 backdrop-blur-sm">
-                <summary className="cursor-pointer list-none text-sm font-semibold tracking-tight">
-                  목차 보기
-                </summary>
-                <nav className="mt-4 space-y-2" aria-label="모바일 블로그 목차">
-                  {mockTableOfContents.map((item) => (
-                    <TableOfContentsLink key={item.id} item={item} />
-                  ))}
-                </nav>
-              </details>
-            </div>
-
-            <div className="px-5 pb-8 md:px-8">
-              <div className="prose prose-slate prose-headings:scroll-mt-[var(--height-header)] prose-pre:rounded-2xl dark:prose-invert max-w-none">
-                <MDXRemote
-                  source={markdown}
-                  options={{
-                    mdxOptions: {
-                      remarkPlugins: [remarkGfm],
-                      rehypePlugins: [rehypeSanitize],
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          </article>
-
-          <Separator className="my-10 md:my-12" />
-
-          <div className="text-muted-foreground rounded-[24px] border border-dashed border-border/80 bg-card/50 px-6 py-5 text-sm backdrop-blur-sm">
-            이전/다음 글 탐색 기능은 준비 중입니다.
-          </div>
-        </section>
-
-        <aside className="relative hidden md:block">
-          <div className="sticky top-[var(--sticky-top)]">
-            <div className="overflow-hidden rounded-[26px] border border-border/70 bg-card/85 p-5 shadow-[0_26px_70px_-46px_rgba(15,23,42,0.35)] backdrop-blur-xl">
-              <div className="mb-4 space-y-1">
-                <p className="text-muted-foreground text-[0.68rem] font-semibold tracking-[0.24em] uppercase">
-                  Contents
-                </p>
-                <h3 className="text-lg font-semibold tracking-tight">목차</h3>
-              </div>
-              <nav className="space-y-2" aria-label="블로그 목차">
-                {mockTableOfContents.map((item) => (
-                  <TableOfContentsLink key={item.id} item={item} />
-                ))}
-              </nav>
             </div>
           </div>
-        </aside>
-      </div>
+
+          <Separator className="bg-border/70" />
+
+          <div className="px-6 py-8 md:px-10 md:py-10">
+            <div className="prose prose-slate prose-headings:scroll-mt-[var(--height-header)] prose-headings:tracking-tight prose-h2:mt-14 prose-h2:border-t prose-h2:border-border/60 prose-h2:pt-10 prose-h3:mt-10 prose-p:text-base prose-p:leading-8 prose-a:text-primary prose-a:font-medium prose-a:no-underline prose-a:underline-offset-4 prose-strong:text-foreground prose-code:rounded-md prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:font-medium prose-code:text-foreground prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-[24px] prose-pre:border prose-pre:border-border/70 prose-pre:bg-background/95 prose-img:rounded-[24px] prose-img:border prose-img:border-border/70 prose-img:shadow-lg prose-blockquote:border-primary/30 prose-blockquote:bg-muted/25 prose-blockquote:px-6 prose-blockquote:py-3 prose-li:marker:text-primary dark:prose-invert max-w-none">
+              <MDXRemote
+                source={markdown}
+                options={{
+                  mdxOptions: {
+                    remarkPlugins: [remarkGfm],
+                    rehypePlugins: [rehypeSanitize],
+                  },
+                }}
+              />
+            </div>
+          </div>
+        </article>
+
+        <div className="grid gap-4 rounded-[26px] border border-border/70 bg-card/65 px-6 py-5 shadow-[0_24px_60px_-46px_rgba(15,23,42,0.35)] backdrop-blur-sm md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+          <div className="space-y-1.5">
+            <p className="text-sm font-medium tracking-tight">다음 탐색</p>
+            <p className="text-muted-foreground text-sm leading-6">
+              이전/다음 글 탐색 기능은 준비 중입니다. 홈에서 다른 글을 바로 이어서
+              확인할 수 있습니다.
+            </p>
+          </div>
+
+          <Button asChild variant="outline" className="w-full rounded-full sm:w-fit">
+            <Link href="/">홈으로 이동</Link>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }

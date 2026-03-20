@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
-  description: siteConfig.description,
+  description: '원동휘의 개인 아카이브',
   openGraph: {
     type: 'website',
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: '원동휘의 개인 아카이브',
     siteName: siteConfig.name,
     locale: 'ko_KR',
     images: [siteConfig.defaultOgImage],
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: '원동휘의 개인 아카이브',
     images: [siteConfig.defaultOgImage],
   },
   robots: {
