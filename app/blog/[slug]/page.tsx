@@ -1,8 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { CalendarDays, User } from 'lucide-react';
+import { createArticleMetadata, siteConfig } from '@/lib/metadata';
 import { getPostBySlug } from '@/lib/notion';
 import { formatDateToKorean } from '@/lib/date';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
@@ -123,9 +126,32 @@ interface BlogPostProps {
   params: Promise<{ slug: string }>;
 }
 
+const getCachedPostBySlug = cache(async (slug: string) => getPostBySlug(slug));
+
+export async function generateMetadata({ params }: BlogPostProps): Promise<Metadata> {
+  const { slug } = await params;
+  const postData = await getCachedPostBySlug(slug);
+
+  if (!postData) {
+    notFound();
+  }
+
+  const { post } = postData;
+
+  return createArticleMetadata({
+    title: post.title || '블로그 글',
+    description: post.description || siteConfig.description,
+    images: post.coverImage ? [post.coverImage] : undefined,
+    publishedTime: post.date,
+    modifiedTime: post.modifiedDate,
+    authors: post.author ? [post.author] : undefined,
+    tags: post.tags?.map((tag) => tag.name),
+  });
+}
+
 export default async function BlogPost({ params }: BlogPostProps) {
   const { slug } = await params;
-  const postData = await getPostBySlug(slug);
+  const postData = await getCachedPostBySlug(slug);
 
   if (!postData) {
     notFound();
