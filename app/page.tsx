@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { InfinitePostList } from '@/components/features/blog/InfinitePostList';
@@ -8,10 +9,17 @@ import { TagSectionSkeleton } from '@/app/_components/TagSectionSkeleton';
 import { ProfileSection } from '@/app/_components/ProfileSection';
 import { ContactSection } from '@/app/_components/ContactSection';
 import { getPublishedPosts, getTagsFromPosts } from '@/lib/notion';
+import { createPageMetadata, siteConfig } from '@/lib/metadata';
 import { getServerInfinitePostsQueryOptions } from '@/lib/queries/posts.server';
 import { getQueryClient } from '@/lib/react-query/queryClient';
 import SortSelect from './_components/SortSelect.client';
 import type { PostSort } from '@/types/blog';
+
+export const metadata: Metadata = createPageMetadata({
+  title: siteConfig.name,
+  description: '노션을 기반으로 정리한 개발 기록과 프론트엔드 실험을 모아둔 개인 블로그입니다.',
+  absoluteTitle: true,
+});
 
 interface HomeProps {
   searchParams: Promise<{ tag?: string; sort?: string }>;
